@@ -44,8 +44,6 @@ public class Loader extends ScreenAdapter {
     private Actor loadingBar;
 
     private Melodi game;
-    public String mapname;
-    private boolean isnew;
     MyTextInputListener popup;
     String title;
 
@@ -79,6 +77,10 @@ public class Loader extends ScreenAdapter {
         game.manager.load("elideonboard.png", Texture.class);
         game.manager.load("boardmove.png", Texture.class);
         game.manager.load("background.png", Texture.class);
+        game.manager.load("dpadup.png", Texture.class);
+        game.manager.load("dpaddown.png", Texture.class);
+        game.manager.load("dpadleft.png", Texture.class);
+        game.manager.load("dpadright.png", Texture.class);
     }
 
     public void popup(){
@@ -193,8 +195,6 @@ public class Loader extends ScreenAdapter {
             //game.playerstream.loadTrack(new File("furelise.mp3"),0,false);
             game.playerstream.loadTrack(new File("jetsetrun.mp3"),0,false);
             System.out.println("LLLLLLL? " + game.playerstream.getTotalLength());
-            genMap();
-
         }
         // Update positions (and size) to match the percentage
         loadingBarHidden.setX(startX + endX * percent);
@@ -220,8 +220,10 @@ public class Loader extends ScreenAdapter {
     }
 
     public void dispose(){
+
         game.stage.clear();
         game.stage.dispose();
+
     }
 
 

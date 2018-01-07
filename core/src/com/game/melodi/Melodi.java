@@ -2,6 +2,7 @@ package com.game.melodi;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,6 +15,7 @@ import com.game.melodi.Audiofullread.MusicPlayer;
 import com.game.melodi.Audiostream.MusicController;
 import com.game.melodi.Graphics.MixRender;
 import com.game.melodi.Loading.PathInterface;
+import com.game.melodi.Networking.ServerStart;
 import com.game.melodi.Physics.GameWorld;
 import com.game.melodi.Screens.Menu;
 
@@ -31,9 +33,15 @@ public class Melodi extends Game {
 	public AssetManager manager;
 	public static MusicPlayer player;
 	public PathInterface extPath;
+	static public InputMultiplexer multi;
+	String storage;
 	//GUI Aspect
 	public static final int WIDTH=480; //1024
 	public static final int HEIGHT=800; //600
+
+
+
+	public static ServerStart server;
 
 	public Melodi(PathInterface path){
 		this.extPath = path;
@@ -42,6 +50,8 @@ public class Melodi extends Game {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		multi = new InputMultiplexer();
+		//server = new ServerStart();
 		img = new Texture("badlogic.jpg");
 		//camera = new OrthographicCamera(WIDTH,HEIGHT); //prob dont need
 		//viewPort = new FitViewport(this.WIDTH,this.HEIGHT);
@@ -51,7 +61,9 @@ public class Melodi extends Game {
 		world = new GameWorld();
 		r = new MixRender(world);
 		player = new MusicPlayer();
-		//this.setScreen(new Test(this));
+		multi.addProcessor(stage);
+		multi.addProcessor(world.stage);
+		Gdx.input.setInputProcessor(multi); //** stage is responsive **//
 		this.setScreen(new Menu(this));
 	}
 

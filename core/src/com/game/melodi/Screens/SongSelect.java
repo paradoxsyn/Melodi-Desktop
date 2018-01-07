@@ -58,16 +58,18 @@ public class SongSelect extends ScreenAdapter {
     private AnimatedImage2 cave;
     FileHandle file;
 
+    private int width, height;
+
     InputMultiplexer input;
 
     public SongSelect(Melodi game){
         this.game = game;
-        input = new InputMultiplexer();
+        //input = new InputMultiplexer();
         slist = new SongList(game);
         setTable();
 
-        input.addProcessor(game.stage);
-        Gdx.input.setInputProcessor(input);
+        //input.addProcessor(game.stage);
+        //Gdx.input.setInputProcessor(input);
 
     }
 
@@ -91,8 +93,8 @@ public class SongSelect extends ScreenAdapter {
 
         //table.setOrigin(Gdx.graphics.getWidth()-350,95);
         //table.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-500);
-        scrollTable.setOrigin(Gdx.graphics.getWidth()-350,95);
-        scrollTable.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-800);
+        //scrollTable.setOrigin(Gdx.graphics.getWidth()-450,95);
+        scrollTable.setPosition(Gdx.graphics.getWidth()-450,Gdx.graphics.getHeight()-800);
 
 
     }
@@ -137,10 +139,9 @@ public class SongSelect extends ScreenAdapter {
                                    player.startPlaying("jetsetrun.mp3");
                                    title = player.player.getTitle();
                                    file = Gdx.files.local(title);
-
+                                   dispose();
                                    game.setScreen(new Loader(game));
 
-                                   dispose();
 
                                }
                            });
@@ -173,6 +174,15 @@ public class SongSelect extends ScreenAdapter {
 
     public void dispose(){
         game.stage.clear();
+        buttonsAtlas.dispose();
+        buttonSkin.dispose();
+        caveAtlas.dispose();
         //game.stage.dispose();
+    }
+
+    public void resize(int width, int height){
+        this.width = Gdx.graphics.getWidth();
+        this.height = Gdx.graphics.getHeight();
+        game.stage.getViewport().update(width, height, true);
     }
 }

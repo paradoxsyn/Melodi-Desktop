@@ -57,12 +57,6 @@ public class Test implements Screen {
     private final int songLen = player.player.getInfo().length;
     private final int groundStep = 20;
 
-    private int screenWidth,screenHeight;
-    private float camWidth,camHeight,aspectRatio;
-
-    Terrain t;
-    float[] terrain;
-    int x,y=500;
     int width,height=300;
     public com.badlogic.gdx.graphics.Color color = new com.badlogic.gdx.graphics.Color(com.badlogic.gdx.graphics.Color.WHITE);
     public com.badlogic.gdx.graphics.Color color2 = new com.badlogic.gdx.graphics.Color(com.badlogic.gdx.graphics.Color.GREEN);
@@ -252,6 +246,7 @@ public class Test implements Screen {
         return map;
     }
 
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
@@ -330,15 +325,19 @@ public class Test implements Screen {
 
     }
 
-    @Override
     public void resize(int width, int height){
-        /*//game.viewPort.update(x,y);
-        screenWidth = width;
-        screenHeight = height;
-        aspectRatio = (float) screenWidth / (float) screenHeight;
-        camHeight = 1.0f;
-        camWidth = 1.0f * aspectRatio;
+        //game.viewPort.update(x,y);
+        //screenWidth = width;
+        //screenHeight = height;
+        //aspectRatio = (float) screenWidth / (float) screenHeight;
+        //camHeight = 1.0f;
+        //camWidth = 1.0f * aspectRatio;
 
-        game.stage.getCamera().position.set(camWidth/2f,camHeight/2f,0);*/
+        //game.stage.getCamera().position.set(camWidth/2f,camHeight/2f,0);
+
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
+        game.world.stage.getViewport().update(width, height,true);
+        //game.world.stage.getCamera().position.set(.5f,1f*(width/height),0);
     }
 }

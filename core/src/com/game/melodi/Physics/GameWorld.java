@@ -29,27 +29,32 @@ import static com.game.melodi.Melodi.WIDTH;
 
 public class GameWorld {
 
-    // here we set up the actual viewport size of the game in meters.
-    public static float UNIT_WIDTH = WIDTH/160; // 6.4 meters width
-    public static float UNIT_HEIGHT = HEIGHT/160; // 3.75 meters height
 
-    public static final Vector2 GRAVITY = new Vector2(0, -6.8f);
+
+    public static final Vector2 GRAVITY = new Vector2(0, -3.8f);
 
     public final Stage stage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world
-    private FitViewport viewport;
-    //public char char; // our playing character
     public List<Fixture> fixtures;
     public Body body;
     public Body body2;
     public BodyDef bd;
     public FixtureDef fixdef;
     public CircleShape shape;
+    public StretchViewport viewport;
+
+    // here we set up the actual viewport size of the game in meters.
+    public final static float UNIT_WIDTH = WIDTH/160; // 6.4 meters width
+    public final static float UNIT_HEIGHT = HEIGHT/160; // 3.75 meters height
+
+    //public final static float UNIT_WIDTH = WIDTH/ // 6.4 meters width
+    //public final static float UNIT_HEIGHT = HEIGHT // 3.75 meters height
 
     public GameWorld(){
         Box2D.init();
         world = new World(GRAVITY, true);
-        viewport = new FitViewport(UNIT_WIDTH,UNIT_HEIGHT); // set the game stage viewport to the meters size
+        //viewport = new FitViewport(UNIT_WIDTH,UNIT_HEIGHT);// set the game stage viewport to the meters size
+        viewport = new StretchViewport(UNIT_WIDTH,UNIT_HEIGHT);
         stage = new Stage(viewport); // create the game stage
         createWorld();
     }

@@ -27,12 +27,14 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Timer;
+import com.game.melodi.Characters.Dpad;
 import com.game.melodi.Characters.Elide;
 import com.game.melodi.Graphics.MixRender;
 import com.game.melodi.Melodi;
@@ -59,11 +61,8 @@ public class TerrainV2  {
     final float PTM_RATIO = 32;
     SpriteBatch batch;
     Texture img;
-    Image dpad;
     float[] verts;
     Sprite sprite;
-    int scrnWidth, scrnHeight;
-    float aspct;
     ShaderProgram shaderProgram;
     Mesh quad,mesh;
     private String vshade,fshade;
@@ -75,6 +74,7 @@ public class TerrainV2  {
     Melodi game;
     Image testimg;
     Elide elide;
+    Dpad dpad;
     FileHandle output;
     ChainShape chain1;
     FixtureDef fixdef;
@@ -111,14 +111,10 @@ public class TerrainV2  {
         this.game = game;
         batch = new SpriteBatch();
         elide = new Elide(game.world,game);
-        //cam = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        //debugcam = new OrthographicCamera(Gdx.graphics.getWidth()/PTM_RATIO,Gdx.graphics.getHeight()/PTM_RATIO);
-        //cam.position.set(cam.viewportWidth/2f,cam.viewportHeight/2f,0);
-        //debugcam.position.set(debugcam.viewportWidth/2f,debugcam.viewportHeight/2f,0);
-        game.world.stage.getCamera().position.x+=.5f;
+        dpad = new Dpad(game,elide.getElideBody(),elide.getBoardBody());
         maxPhysics = Gdx.graphics.getWidth()/20;
         img = new Texture("badlogic.jpg");
-        dpad = new Image(new Texture("background.png"));
+
         testimg = new Image(img);
         sprite = new Sprite(img);
         sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -126,19 +122,17 @@ public class TerrainV2  {
         chain1 = new ChainShape();
         fixdef = new FixtureDef();
 
-        scrnWidth = Gdx.graphics.getWidth();
-        scrnHeight = Gdx.graphics.getHeight();
-        aspct = (float) scrnWidth / (float) scrnHeight;
-
         testimg.setSize(.5f,.5f);
-        dpad.setSize(.5f,.5f);
-        dpad.setPosition(elide.getX(),elide.getY());
+        //dpad.setSize(.5f,.5f);
+        //dpad.setPosition(elide.getImage().getOriginX(),elide.getImage().getOriginY());
         //game.world.stage.addActor(testimg);
-        game.world.stage.addActor(dpad);
-        game.world.stage.addActor(elide);
+        //game.world.stage.addActor(dpad);
 
         vshade = Gdx.files.internal("shaders/defaultvertex.glsl").readString();
         fshade = Gdx.files.internal("shaders/defaultfrag.glsl").readString();
+
+        System.out.println("world stage height + width" + game.world.stage.getHeight() + " " + game.world.stage.getWidth());
+        System.out.println("stage height + width" + game.stage.getHeight() + " " + game.stage.getWidth());
 
         feed = player.player.getInfo();
         shaderProgram = new ShaderProgram(vshade,fshade);
@@ -158,6 +152,8 @@ public class TerrainV2  {
         output.writeString(Arrays.toString(normfeed),false);
         String test = output.readString();
         System.out.println(test);
+        game.world.stage.getCamera().position.x+=6f;
+        //TODO set to first vertice on map
 
 
         /*for(int i=0;i<normfeed.length;i++){
@@ -376,16 +372,16 @@ public class TerrainV2  {
     }
 
     public void updatePhysics(int startIndex, int endIndex){
-        //EdgeShape shape;
-        //shape = new EdgeShape();
-        //int j = 0;
+        EdgeShape shape;
+        shape = new EdgeShape();
+        int j = 0;
 
-        /*for(int i=startIndex;i < endIndex;i+=5){
+        for(int i=startIndex;i < endIndex;i+=5){
             Vector2 p1 = new Vector2(verts[i],verts[i+1]);
             Vector2 p2 = new Vector2(verts[i+5],verts[i+6]);
             shape.set(p1,p2);
             game.world.fixtures.add(game.world.body.createFixture(shape,5));
-        }*/
+        }
 
         /*for(int i=startIndex;i < endIndex;i+=5){
             Vector2 p1 = new Vector2(verts[i],verts[i+6]);
@@ -405,9 +401,15 @@ public class TerrainV2  {
         //}
 
         //chain1.createChain(new Vector2[] {new Vector2(0,0f),new Vector2(10,4),new Vector2(20,2),new Vector2(0,100)});
+
+        /*MassData m = new MassData();
+        m.I = 100;
         chain1.createChain(xyPoints);
         fixdef.shape = chain1;
+        game.world.body.setSleepingAllowed(false);
+        game.world.body.setMassData(m);
         game.world.body.createFixture(fixdef);
+        */
         //game.world.fixtures.add(game.world.body.createFixture(shape,0));
     }
 
@@ -458,17 +460,23 @@ public class TerrainV2  {
         //quad.render(shaderProgram,GL20.GL_TRIANGLES);
         //img.bind();
         game.r.render();
+        //System.out.println("CAMERA: " + game.world.stage.getCamera().position);
+        //System.out.println("ELIDE: " + elide.getX() + " " + elide.getY());
+
         /*shaderProgram.begin();
         shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
         shaderProgram.setUniformi("u_texture", 0);
         mesh.render(shaderProgram, GL20.GL_TRIANGLE_STRIP);
         //quad.render(shaderProgram,GL20.GL_TRIANGLE_STRIP);
         shaderProgram.end();*/
+        elide.act(dt);
+        dpad.act(dt);
         game.world.update(dt);
+        dpad.debug.begin();
+        dpad.drawDebug(dpad.debug);
+        dpad.debug.end();
         //testimg.setPosition(game.world.body2.getPosition().x,game.world.body2.getPosition().y);
-        game.world.stage.getCamera().position.x+=0.010f;
-        //cam.position.x+=5;
-        //cam.update();
+        game.world.viewport.getCamera().position.set(elide.getX(),elide.getY(),0);
         //game.test.setAutoShapeType(true);
 
     }

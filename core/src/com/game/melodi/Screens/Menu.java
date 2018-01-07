@@ -1,6 +1,8 @@
 package com.game.melodi.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -30,6 +32,7 @@ import com.game.melodi.Animations.Background;
 import com.game.melodi.Loading.Loader;
 import com.game.melodi.Maps.TerrainV2;
 import com.game.melodi.Melodi;
+import com.game.melodi.Networking.ServerStart;
 import com.game.melodi.Particles.ParticleMixer;
 import com.game.melodi.Transitions.AlphaFadingTransition;
 import com.game.melodi.Transitions.SlicingTransition;
@@ -71,9 +74,18 @@ public class Menu extends ScreenAdapter {
 	Table buttonTable;
 
 
+	boolean existingUser=false;
+	TextButton.TextButtonStyle style;
+
+	Preferences prefs = Gdx.app.getPreferences("Login");
+	String id;
+	//TODO If they uninstall the app their login is gone
+
 
 	public Menu(final Melodi game){
 		this.game = game;
+		init();
+
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
 
@@ -81,8 +93,6 @@ public class Menu extends ScreenAdapter {
 		elideanim = new Animation<TextureAtlas.AtlasRegion>(.1f,elideatlas.findRegions("elidecool"));
 		elidecool = new AnimatedImage2(elideanim);
 		board = new Image(new Texture("boardfront.png"));
-		//melotitle = new Texture("titlemelo.png");
-		//melotitle.setWrap(Texture.TextureWrap.MirroredRepeat,Texture.TextureWrap.MirroredRepeat);
 		bg = new Background(new TextureRegion(new Texture("titlemelo.png")));
 		bg.setBounds(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		buttonTable = new Table();
@@ -90,8 +100,6 @@ public class Menu extends ScreenAdapter {
 		titleatlas = new TextureAtlas("titleanim/titleanim.txt");
 		titleanim = new Animation<TextureAtlas.AtlasRegion>(.2f,titleatlas.findRegions("melodi"));
 		title = new AnimatedImage2(titleanim);
-		//t2 = new TerrainV2();
-		//t2.init();
 
 		elidecool.setPosition(0,0);
 		board.setPosition(elidecool.getX()+100,-100);
@@ -117,27 +125,54 @@ public class Menu extends ScreenAdapter {
 		buttonSkin.addRegions(buttonsAtlas); //** skins for on and off **//
 		fontParameter.size = 54;
 		font = fontGenerator.generateFont(fontParameter);
-		//font = new BitmapFont(Gdx.files.internal("new.fnt"),false); //** font **//
-		//game.stage = new Stage();        //** window is stage **//
-		game.stage.clear();
-		Gdx.input.setInputProcessor(game.stage); //** stage is responsive **//
 
-		TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(); //** Button properties **//
+	    game.stage.clear();
+
+		style = new TextButton.TextButtonStyle(); //** Button properties **//
 		style.up = buttonSkin.getDrawable("buttonOff");
 		style.down = buttonSkin.getDrawable("buttonOn");
 
 		style.font = font;
 
+
+		if(existingUser) {
+			existingUser();
+		}else{
+			newUser();
+		}
+
+
+		game.stage.addActor(bg);
+		game.stage.addActor(title);
+		game.stage.addActor(pmixer);
+		game.stage.addActor(elidecool);
+		game.stage.addActor(board);
+		game.stage.addActor(buttonTable);
+
+
+	}
+
+	public void init(){
+		existingUser = prefs.getBoolean("existing");
+		System.out.println(existingUser);
+
+		if(!existingUser){
+			//prefs.putString("ID","null");
+			//prefs.putBoolean("existing",false);
+		}
+		else{
+			//prefs.putBoolean("existing",true);
+			id = prefs.getString("ID");
+			//existingUser = prefs.getBoolean("existing");
+		}
+
+	}
+
+	public void existingUser(){
 		button = new TextButton("Start", style);
-		button2 = new TextButton("Songs",style);
-		button4 = new TextButton("About",style);
-		//** Button text and style **//
-		//button.setHeight(Gdx.graphics.getHeight()/3); //** Button Height **//
-		//button.setWidth(Gdx.graphics.getWidth()/3); //** Button Width **//
-		//button2.setHeight(h/3);
-		//button2.setWidth(w/2);
-		//button4.setHeight(h/3);
-		//button4.setWidth(w/3);
+		button2 = new TextButton("Songs", style);
+		button4 = new TextButton("About", style);
+
 		buttonTable.add(button);
 		buttonTable.row();
 		buttonTable.add(button2);
@@ -165,22 +200,55 @@ public class Menu extends ScreenAdapter {
 
 			}
 		});
-
-		game.stage.addActor(bg);
-		game.stage.addActor(title);
-		game.stage.addActor(pmixer);
-		game.stage.addActor(elidecool);
-		game.stage.addActor(board);
-		game.stage.addActor(buttonTable);
-
-
 	}
 
-	/*public void show() {
-		draw();
+	public void newUser(){
+		button = new TextButton("Register", style);
+		button2 = new TextButton("Start offline", style);
 
-	}*/
+		buttonTable.add(button);
+		buttonTable.row();
+		buttonTable.add(button2);
 
+		buttonTable.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+
+		button.setPosition(Gdx.graphics.getWidth()/3+button.getWidth()/2, Gdx.graphics.getHeight()/6+ Gdx.graphics.getHeight()/18);
+		button2.setPosition(Gdx.graphics.getWidth()/4+button.getWidth(), Gdx.graphics.getHeight()/36+ Gdx.graphics.getHeight()/108);
+
+		button.addListener(new InputListener() {
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
+				return true;
+
+			}
+
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Rggggggeleased");
+
+				//load song selection
+				dispose();
+				game.setScreen(new NewUser(game));
+
+			}
+		});
+
+		button2.addListener(new InputListener() {
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
+				return true;
+
+			}
+
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Rggggggeleased");
+
+				//load song selection
+				dispose();
+				game.setScreen(new SongSelect(game));
+
+			}
+		});
+	}
 
 	public void update(float dt) {
 		elapsedTime += Gdx.graphics.getDeltaTime();
@@ -188,18 +256,6 @@ public class Menu extends ScreenAdapter {
 
 	}
 
-
-	/*public void draw() {
-		elapsedTime += Gdx.graphics.getDeltaTime();
-		GL20 gl = Gdx.gl;
-		gl.glClearColor(1, 0, 0, 1);
-		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		game.stage.act();
-		//game.viewPort.apply();
-		game.stage.draw();
-		//t2.render();
-
-	}*/
 
 	@Override
 	public void resize(int width, int height) {
@@ -219,9 +275,15 @@ public class Menu extends ScreenAdapter {
 		//t2.render();
 	}
 
+	@Override
 	public void dispose(){
-		game.stage.dispose();
+		elideatlas.dispose();
+		buttonsAtlas.dispose();
+		buttonTable.reset();
+		game.stage.clear();
+
 	}
+
 
 
 }

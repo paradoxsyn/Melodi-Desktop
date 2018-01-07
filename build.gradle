@@ -153,6 +153,7 @@ project(":core") {
         compile "de.tomgrill.gdxfacebook:gdx-facebook-core:1.3.0"
         compile "com.underwaterapps.overlap2druntime:overlap2d-runtime-libgdx:0.1.0"
         compile "com.kotcrab.vis:vis-ui:1.3.0"
+        compile "io.socket:socket.io-client:0.7.0"
         compile fileTree(dir: '../libs', include: '*.jar')
         compile fileTree(dir: 'libs', include: '*.jar')
         compile 'org.jcraft:jorbis:0.0.17'
