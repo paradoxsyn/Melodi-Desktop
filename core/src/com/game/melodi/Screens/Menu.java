@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -46,7 +47,7 @@ public class Menu extends ScreenAdapter {
 	Melodi game;
 	private BitmapFont font;
 	private TextureAtlas buttonsAtlas; //** image of buttons **//
-	private Skin buttonSkin; //** images are used as skins of the button **//
+	private Skin buttonSkin,metalskin; //** images are used as skins of the button **//
 	private TextButton button;
 	private TextButton button2;
 	private TextButton button3;
@@ -67,6 +68,7 @@ public class Menu extends ScreenAdapter {
 	private TextureAtlas titleatlas;
 	private Animation<TextureAtlas.AtlasRegion> titleanim;
 	private AnimatedImage2 title;
+	private Label.LabelStyle lstyle;
 
 	ParticleMixer pmixer;
 	private TextureAtlas noteatlas;
@@ -96,6 +98,7 @@ public class Menu extends ScreenAdapter {
 		bg = new Background(new TextureRegion(new Texture("titlemelo.png")));
 		bg.setBounds(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		buttonTable = new Table();
+		metalskin = new Skin(Gdx.files.internal("metal-ui.json"));
 
 		titleatlas = new TextureAtlas("titleanim/titleanim.txt");
 		titleanim = new Animation<TextureAtlas.AtlasRegion>(.2f,titleatlas.findRegions("melodi"));
@@ -125,6 +128,9 @@ public class Menu extends ScreenAdapter {
 		buttonSkin.addRegions(buttonsAtlas); //** skins for on and off **//
 		fontParameter.size = 54;
 		font = fontGenerator.generateFont(fontParameter);
+
+		lstyle = metalskin.get(Label.LabelStyle.class);
+		lstyle.font = font;
 
 	    game.stage.clear();
 
@@ -169,10 +175,17 @@ public class Menu extends ScreenAdapter {
 	}
 
 	public void existingUser(){
-		button = new TextButton("Start", style);
-		button2 = new TextButton("Songs", style);
-		button4 = new TextButton("About", style);
+		Label name = new Label("Welcome "+id,lstyle);
 
+
+		button = new TextButton("Quick Start (Not implemented)", style);
+		button2 = new TextButton("Songs", style);
+		button4 = new TextButton("How To Play", style);
+
+		game.stage.addActor(name);
+
+		buttonTable.add(name);
+		buttonTable.row();
 		buttonTable.add(button);
 		buttonTable.row();
 		buttonTable.add(button2);
@@ -200,15 +213,35 @@ public class Menu extends ScreenAdapter {
 
 			}
 		});
+
+		button4.addListener(new InputListener() {
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
+				return true;
+
+			}
+
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Rggggggeleased");
+
+				//load song selection
+				dispose();
+				game.setScreen(new About(game));
+
+			}
+		});
 	}
 
 	public void newUser(){
 		button = new TextButton("Register", style);
 		button2 = new TextButton("Start offline", style);
+		button4 = new TextButton("How To Play", style);
 
 		buttonTable.add(button);
 		buttonTable.row();
 		buttonTable.add(button2);
+		buttonTable.row();
+		buttonTable.add(button4);
 
 		buttonTable.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
 
@@ -245,6 +278,23 @@ public class Menu extends ScreenAdapter {
 				//load song selection
 				dispose();
 				game.setScreen(new SongSelect(game));
+
+			}
+		});
+
+		button4.addListener(new InputListener() {
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
+				return true;
+
+			}
+
+			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+				Gdx.app.log("my app", "Rggggggeleased");
+
+				//load song selection
+				dispose();
+				game.setScreen(new About(game));
 
 			}
 		});

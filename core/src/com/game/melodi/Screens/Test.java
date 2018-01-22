@@ -20,7 +20,11 @@ import com.badlogic.gdx.utils.Timer;
 import com.game.melodi.Animations.Background;
 import com.game.melodi.Audiofullread.MusicFilePlayer;
 import com.game.melodi.Audiofullread.MusicPlayer;
+import com.game.melodi.Audiostream.AudioDevicePlayer2;
+import com.game.melodi.Audiostream.AudioInputStreamFactory;
 import com.game.melodi.Audiostream.File;
+import com.game.melodi.Audiostream.FileHandleInputStreamFactory;
+import com.game.melodi.Audiostream.MP3InputStreamFactory;
 import com.game.melodi.Characters.Elide;
 import com.game.melodi.Maps.LevelMap;
 import com.game.melodi.Maps.Terrain;
@@ -64,142 +68,26 @@ public class Test implements Screen {
 
     ImmediateModeRenderer20 r;
     TerrainV2 t2;
-    TerrainV3 t3;
-    Vector2[] xyPoints;
-
-    int hillVerts;
-    int numIndices;
-    int maxPhysics;
-
-    public Mesh mesh;
-    public ShaderProgram shader;
-    private String vshade,fshade;
-
-    private final int maxHillVerts = 40000;
-
-    Vector2[] groundVerts;
-    Vector2[] groundTexCoords;
-    Vector2[] grassVerts;
-    Vector2[] grassTexCoords;
-
-    Sprite grassSprite;
-    Sprite groundSprite;
-
     SpriteBatch batch;
     Sprite sprite;
     Texture img;
-    GameWorld world;
+    AudioDevicePlayer2 dplayer;
 
-    TmapParse tmaparse;
 
-    public Test(final Melodi game){
+    public Test(final Melodi game, AudioDevicePlayer2 dplayer){
         this.game = game;
         r = new ImmediateModeRenderer20(false,true,0);
         batch = new SpriteBatch();
-
-        System.out.println("TEST IS NOW ON");
-        Gdx.input.setInputProcessor(game.world.stage);
+        this.dplayer = dplayer;
 
         img = new Texture("badlogic.jpg");
         sprite = new Sprite(img);
         sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-
-        //t = new Terrain(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),Gdx.graphics.getHeight()/4,0.5f);
-        //terrain = t.getTerrain();
         t2 = new TerrainV2();
-        //t3 = new TerrainV3();
+
         t2.init(game);
-        groundSprite = new Sprite(new Texture(Gdx.files.internal("ground.png")));
-        grassSprite = new Sprite(new Texture(Gdx.files.internal("grass.png")));
-        //t3.init();
-        xyPoints = new Vector2[20000];
-        groundVerts = new Vector2[maxHillVerts];
-        groundTexCoords = new Vector2[maxHillVerts];
-        grassVerts = new Vector2[maxHillVerts];
-        grassTexCoords = new Vector2[maxHillVerts];
-        //generateXY();
-        //generateMESH();
-        //maybeGL();
-        /*for(int i=0;i<t3.xyPoints.length;i++){
-            v = new Vector2[i];
-            v[i] = t3.xyPoints[i];
-        }*/
-        //tmaparse = new TmapParse(game);
-
-    }
-
-    public Vector2[] generateXY(){
-        float yOffset = 350f;
-        int index = 0;
-        for(int i = 0; i < songLen; i++){
-            //xyPoints[i].set(index,yOffset - MathUtils.sin(i) * 60 * i / 100.f);
-            xyPoints[i] = new Vector2();
-            xyPoints[i].x = index;
-            yOffset = player.player.getInfo()[i];
-            xyPoints[i].y = yOffset - MathUtils.sin(i) * 30  * i / 6;
-            index+=groundStep;
-        }
-
-        return xyPoints;
-    }
-
-    public void generateMESH(){
-        hillVerts=0;
-        //Vector2[] p = xyPoints.clone();
-        for(int i=0;i<maxHillVerts;i++){
-            grassVerts[i] = new Vector2();
-            groundVerts[i] = new Vector2();
-            grassTexCoords[i] = new Vector2();
-            groundTexCoords[i] = new Vector2();
-        }
-
-        for(int i=0;i<songLen;i++){
-
-            //p[i] = xyPoints[i];
-            //p[i] = new Vector2();
-            grassVerts[hillVerts].set(xyPoints[i].x,xyPoints[i].y-12f);
-            //grassVerts[hillVerts].y = xyPoints[i].y-12f;
-            grassTexCoords[hillVerts++].set(xyPoints[i].x / grassSprite.getWidth(),1f);
-            //grassTexCoords[hillVerts].y = 1f;
-            grassVerts[hillVerts].set(xyPoints[i].x,xyPoints[i].y);
-            //grassVerts[hillVerts].y = xyPoints[i].y;
-            grassTexCoords[hillVerts++].set(xyPoints[i].x/grassSprite.getWidth(),0);
-            //grassTexCoords[hillVerts].y = 0f;
-        }
-        System.out.println("GRASS "+ Arrays.toString(grassVerts) + "\n" + "T " + Arrays.toString(grassTexCoords));
-        hillVerts=0;
 
 
-        for(int i = 0;i<songLen;i++) {
-            //p[i] = xyPoints[i];
-            groundVerts[hillVerts].set(xyPoints[i].x,0);
-            //groundVerts[hillVerts].y = 0;
-            groundTexCoords[hillVerts++].set(xyPoints[i].x / groundSprite.getWidth(),0);
-            //groundTexCoords[hillVerts++].y = 0;
-            groundVerts[hillVerts].set(xyPoints[i].x,xyPoints[i].y-5f);
-            //groundVerts[hillVerts].y = xyPoints[i].y - 5f;
-            groundTexCoords[hillVerts++].set(xyPoints[i].x / groundSprite.getWidth(),xyPoints[i].y / groundSprite.getHeight());
-            //groundTexCoords[hillVerts++].y = xyPoints[i].y / groundSprite.getHeight();
-        }
-    }
-
-    public void maybeGL(){
-        //bind
-        float[] vertices = new float[maxHillVerts];
-        vshade = Gdx.files.internal("shaders/defaultvertex.glsl").readString();
-        fshade = Gdx.files.internal("shaders/defaultfrag.glsl").readString();
-        shader = new ShaderProgram(vshade,fshade);
-        mesh = new Mesh( true, maxHillVerts, 6,
-                new VertexAttribute( VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE ));
-        for(int i =0;i<maxHillVerts;i++){
-            vertices[i] = grassVerts[i].x;
-            vertices[i++] = grassVerts[i].y;
-            //vertices[i] = grassTexCoords[i].x;
-            //vertices[i++] = grassTexCoords[i].y;
-        }
-        //mesh.setVertices(vertices);
-        //mesh.setIndices(new short[]{0,2,3,1,2,2});
-        //System.out.println(Arrays.toString(mesh.getVertices(vertices)));
     }
 
     public void play(){
@@ -207,13 +95,6 @@ public class Test implements Screen {
         game.playerstream.play(map,false,false);
         System.out.println(map.timingPointsToString());
     }
-
-        /*highfreq = numbers;
-        for(int i=0;i<highfreq.length;i++){
-            if(highfreq[i]>20000){
-                System.out.println("High somethin");
-                System.out.println(highfreq[i]);*/
-
 
     public static LevelMap getTheme(){
         String test = "furelise.mp3,Rainbows,Kevin MacLeod,219350";
@@ -302,7 +183,7 @@ public class Test implements Screen {
 
     @Override
     public void dispose(){
-
+        dplayer.dispose();
     }
 
     @Override
@@ -312,17 +193,16 @@ public class Test implements Screen {
 
     @Override
     public void show(){
-
     }
 
     @Override
     public void pause(){
-
+        dplayer.pause();
     }
 
     @Override
     public void resume(){
-
+        dplayer.resume();
     }
 
     public void resize(int width, int height){
@@ -338,6 +218,7 @@ public class Test implements Screen {
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
         game.world.stage.getViewport().update(width, height,true);
+        game.world.uistage.getViewport().update(width, height,true);
         //game.world.stage.getCamera().position.set(.5f,1f*(width/height),0);
     }
 }

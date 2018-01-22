@@ -1,14 +1,11 @@
 package com.game.melodi.Maps;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -17,116 +14,81 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.MassData;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.FloatArray;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Timer;
+import com.game.melodi.Audiostream.AudioDevicePlayer2;
 import com.game.melodi.Characters.Dpad;
 import com.game.melodi.Characters.Elide;
-import com.game.melodi.Graphics.MixRender;
+import com.game.melodi.Input.SwipeHandler;
+import com.game.melodi.Input.SwipeTriStrip;
 import com.game.melodi.Melodi;
-import com.game.melodi.Physics.GameWorld;
-import com.game.melodi.Shaders.FragShader;
-import com.game.melodi.Shaders.VertShader;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Random;
 
-import static com.game.melodi.Melodi.HEIGHT;
-import static com.game.melodi.Melodi.WIDTH;
+import static com.game.melodi.Characters.Elide.MAX_VELOCITY;
 import static com.game.melodi.Melodi.player;
+import static com.game.melodi.Physics.GameWorld.UNIT_HEIGHT;
+import static com.game.melodi.Physics.GameWorld.UNIT_WIDTH;
 
 /**
  * Created by Paradox on 5/21/2017.
  */
 
 public class TerrainV2  {
-    final float PTM_RATIO = 32;
     SpriteBatch batch;
-    Texture img;
-    float[] verts;
-    Sprite sprite;
+    Image img;
+    float[] verts,meshverts;
     ShaderProgram shaderProgram;
-    Mesh quad,mesh;
+    Mesh quad;
     private String vshade,fshade;
     private int[] feed;
     int maxPhysics = 20000;
     private float[] normfeed;
+
+    Texture groundTexture,surfaceTexture;
+
     Vector2[] xyPoints;
-    Array<Vector2> xyArray;
+    Vector2 p1,p2;
+
     Melodi game;
-    Image testimg;
     Elide elide;
     Dpad dpad;
-    FileHandle output;
     ChainShape chain1;
     FixtureDef fixdef;
 
-    String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-            + "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-            + "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-            + "uniform mat4 u_projTrans;\n" //
-            + "varying vec4 v_color;\n" //
-            + "varying vec2 v_texCoords;\n" //
-            + "\n" //
-            + "void main()\n" //
-            + "{\n" //
-            + "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-            + "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-            + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-            + "}\n";
-    String fragmentShader = "#ifdef GL_ES\n" //
-            + "#define LOWP lowp\n" //
-            + "precision mediump float;\n" //
-            + "#else\n" //
-            + "#define LOWP \n" //
-            + "#endif\n" //
-            + "varying LOWP vec4 v_color;\n" //
-            + "varying vec2 v_texCoords;\n" //
-            + "uniform sampler2D u_texture;\n" //
-            + "void main()\n"//
-            + "{\n" //
-            + "  gl_FragColor = v_color;\n" //
-            + "}";
-    //+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords).a;\n" //
+    int j = 0;
+    int i = 0;
+    int id = 0;
+    float x,y; // Mesh location in the world
+    short[] indices;
+
+    SwipeTriStrip tris;
+    Texture tex;
+    ShapeRenderer shapes;
 
     public void init(Melodi game) {
         this.game = game;
+        img = new Image(game.manager.get("darkcave.png",Texture.class));
+        img.setBounds(0,0,UNIT_WIDTH,UNIT_HEIGHT);
+        //game.world.stage.addActor(img);
         batch = new SpriteBatch();
         elide = new Elide(game.world,game);
         dpad = new Dpad(game,elide.getElideBody(),elide.getBoardBody());
         maxPhysics = Gdx.graphics.getWidth()/20;
-        img = new Texture("badlogic.jpg");
 
-        testimg = new Image(img);
-        sprite = new Sprite(img);
-        sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        tris = new SwipeTriStrip();
+        tex = new Texture("glosser.png");
 
         chain1 = new ChainShape();
         fixdef = new FixtureDef();
-
-        testimg.setSize(.5f,.5f);
-        //dpad.setSize(.5f,.5f);
-        //dpad.setPosition(elide.getImage().getOriginX(),elide.getImage().getOriginY());
-        //game.world.stage.addActor(testimg);
-        //game.world.stage.addActor(dpad);
 
         vshade = Gdx.files.internal("shaders/defaultvertex.glsl").readString();
         fshade = Gdx.files.internal("shaders/defaultfrag.glsl").readString();
@@ -147,142 +109,27 @@ public class TerrainV2  {
             normfeed[i] /= Math.max(feed[80], feed[feed.length - 1] - Math.min(feed[80], feed[feed.length - 1]));
         }
         System.out.println("NORMALIZED FEED" + Arrays.toString(normfeed));
-        output = Gdx.files.local("output.txt");
-        System.out.println(output.exists());
-        output.writeString(Arrays.toString(normfeed),false);
-        String test = output.readString();
-        System.out.println(test);
         game.world.stage.getCamera().position.x+=6f;
-        //TODO set to first vertice on map
 
-
-        /*for(int i=0;i<normfeed.length;i++){
-            normfeed[i]*=100;
-        }*/
         trackSync();
         verts = new float[feed.length*20];
+        meshverts = new float[feed.length*20];
+        indices = new short[feed.length*6];
 
-        //float[] verts2 = new float[500000];
-        short[] indices = new short[feed.length*6];
-        int j = 0;
-        int i = 0;
-        int id = 0;
-        float x,y; // Mesh location in the world
-        float width,height; // Mesh width and height
-
-        x = y = 0f;
-        //width = height = 600f;
-        width = 600f;
-        height = 600f;
-        //Top Left Vertex Triangle 1
-        /*verts[i++] = x;   //X
-        //verts[i++] = y + height; //Y
-        verts[i++] = y + normfeed[125];
-        verts[i++] = 0;    //Z
-        verts[i++] = 0f;   //U
-        verts[i++] = 0f;   //V
-
-        //Top Right Vertex Triangle 1
-        verts[i++] = x + width;
-        //verts[i++] = y + height;
-        verts[i++] = y + normfeed[150];
-        verts[i++] = 0;
-        verts[i++] = 1f;
-        verts[i++] = 0f;
-
-        //Bottom Left Vertex Triangle 1
-        verts[i++] = x;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 0f;
-        verts[i++] = 1f;
-
-        //Top Right Vertex Triangle 2
-        verts[i++] = x + width;
-        //verts[i++] = y + height;
-        verts[i++] = y + normfeed[200];
-        verts[i++] = 0;
-        verts[i++] = 1f;
-        verts[i++] = 0f;
-
-        //Bottom Right Vertex Triangle 2
-        verts[i++] = x + width;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 1f;
-        verts[i++] = 1f;
-
-        //Bottom Left Vertex Triangle 2
-        verts[i++] = x;
-        verts[i++] = y;
-        verts[i++] = 0;
-        verts[i++] = 0f;
-        verts[i++] = 1f;
-        */
-        //batch.setProjectionMatrix(cam.combined);
-        //cam.setToOrtho(true);
-        //TODO 40-80 standard for elise, more testing
-        /*for(i=100;i<normfeed.length;i++){
+        for(i=0;i<normfeed.length-1;i++){
             verts[id++] = x/80;
-            verts[id++] = y/80;
+            verts[id++] = normfeed[i];
             //verts[id++] = normfeed[i] - MathUtils.sin(i) * 60  * i / 50;
             verts[id++] = 0;
             verts[id++] = 0f;
             verts[id++] = 1f;
 
-            verts[id++] = (x+=20)/80;
-            verts[id++] = normfeed[i];
+            verts[id++] = (x+=35)/80;
+            verts[id++] = normfeed[i+1];
             //verts[id++] =  feed[i];
             verts[id++] = 0;
             verts[id++] = 0f;
             verts[id++] = 1f;
-
-            /*verts[id++] = (x+=40)/80;
-            verts[id++] = y/80;
-            //verts[id++] = normfeed[i] - MathUtils.sin(i) * 60  * i / 50;
-            verts[id++] = 0;
-            verts[id++] = 1f;
-            verts[id++] = 0f;//testone
-
-            verts[id++] = (x+=30)/80;
-            //verts[id++] = feed[i] + MathUtils.sin(i) * 60 * i / 100;
-            verts[id++] = normfeed[i]/500;
-            verts[id++] = 0;
-            verts[id++] = 0f;
-            verts[id++] = 1f;
-
-            //x=0;*/
-            //ForTestingPurposes
-            for(i=0;i<normfeed.length-1;i++){
-                verts[id++] = x/80;
-                verts[id++] = normfeed[i];
-                //verts[id++] = normfeed[i] - MathUtils.sin(i) * 60  * i / 50;
-                verts[id++] = 0;
-                verts[id++] = 0f;
-                verts[id++] = 1f;
-
-                verts[id++] = (x+=35)/80;
-                verts[id++] = normfeed[i+1];
-                //verts[id++] =  feed[i];
-                verts[id++] = 0;
-                verts[id++] = 0f;
-                verts[id++] = 1f;
-
-            /*verts[id++] = (x+=40)/80;
-            verts[id++] = y/80;
-            //verts[id++] = normfeed[i] - MathUtils.sin(i) * 60  * i / 50;
-            verts[id++] = 0;
-            verts[id++] = 1f;
-            verts[id++] = 0f;//testone
-
-            verts[id++] = (x+=30)/80;
-            //verts[id++] = feed[i] + MathUtils.sin(i) * 60 * i / 100;
-            verts[id++] = normfeed[i]/500;
-            verts[id++] = 0;
-            verts[id++] = 0f;
-            verts[id++] = 1f;
-
-            //x=0;*/
 
         }
 
@@ -295,74 +142,24 @@ public class TerrainV2  {
             indices[j+5]=(short)(j);
         }
 
-        id=0;
-        x=0;
-        y=0;
+        //generateXY();
+        initializeTextures();
 
-        /*for(i=100;i<normfeed.length;i++) {
-            verts2[id++] = x;
-            verts2[id++] = y-12;
-            //verts[id++] = normfeed[i] - MathUtils.sin(i) * 60  * i / 50;
-            verts2[id++] = 0;
-            verts2[id++] = 0f;
-            verts2[id++] = 1f;
-
-            verts2[id++] = x;
-            //verts[id++] = feed[i] + MathUtils.sin(i) * 60  * i / 100;
-            verts2[id++] = y-5f;
-            verts2[id++] = 0;
-            verts2[id++] = 0f;
-            verts2[id++] = 1f;
-
-            verts[id++] = x;
-            //verts[id++] = feed[i] + MathUtils.sin(i) * 60 * i / 100;
-            verts[id++] = y-5;
-            verts[id++] = 0;
-            verts[id++] = 0f;
-            verts[id++] = 1f;
-
-              for(j=0;j<normfeed.length;j++){
-                indices[j]=(short)(i);
-                indices[j+1]=(short)(i+3);
-                indices[j+2]=(short)(i+2);
-                indices[j+3]=(short)(i+2);
-                indices[j+4]=(short)(i+3);
-                indices[j+5]=(short)(i);
-            }
-        }*/
-        quad = new Mesh( true, verts.length, verts.length,
+        /*quad = new Mesh( true, meshverts.length, 0,
                 new VertexAttribute( VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE ),
                 new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
-        // Create a mesh out of two triangles rendered clockwise without indices
-        mesh = new Mesh( true, verts.length, 0,
-                new VertexAttribute( VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE ),
-                new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
+        //quad.setVertices(meshverts);
+        //quad.setIndices(indices);*/
 
-        mesh.setVertices(verts);
-        //quad.setVertices(verts2);
-        //quad.setIndices(indices);
-
-        //mesh.setIndices(indices);
-        //mesh.setIndices(new short[]{0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8});
-        /*quad = new Mesh(true, 4,6,new VertexAttribute(VertexAttributes.Usage.Position,3,"a_position"),
-                new VertexAttribute(VertexAttributes.Usage.ColorPacked,4,"a_color"));
-        quad.setVertices(new float[] {
-                -1.0f,-1.0f,0,Color.toFloatBits(255,0,0,255),
-                1.0f,1.0f,0,Color.toFloatBits(0,255,0,255),
-                1.0f,1.0f,0,Color.toFloatBits(0,0,255,255),
-                -1.0f,1.0f,0,Color.toFloatBits(255,255,0,255)});
-        quad.setIndices(new short[]{
-                0,2,2,3,1,0
-        });*/
-        generateXY();
         updatePhysics(0,normfeed.length);
+        generateMESH(normfeed.length-1);
         System.out.println("Vertices "+ Arrays.toString(verts));
         System.out.println("chain info " + Arrays.toString(xyPoints));
+
+        shapes = new ShapeRenderer();
     }
 
-    public void trackSync(){
-        //vertslength
-        //normfeedlength
+    private void trackSync(){
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
@@ -371,55 +168,34 @@ public class TerrainV2  {
         },0,3f);
     }
 
-    public void updatePhysics(int startIndex, int endIndex){
+    private void updatePhysics(int startIndex, int endIndex){
         EdgeShape shape;
+        p1 = new Vector2();
+        p2 = new Vector2();
         shape = new EdgeShape();
         int j = 0;
-
-        for(int i=startIndex;i < endIndex;i+=5){
-            Vector2 p1 = new Vector2(verts[i],verts[i+1]);
-            Vector2 p2 = new Vector2(verts[i+5],verts[i+6]);
-            shape.set(p1,p2);
-            game.world.fixtures.add(game.world.body.createFixture(shape,5));
-        }
-
         /*for(int i=startIndex;i < endIndex;i+=5){
-            Vector2 p1 = new Vector2(verts[i],verts[i+6]);
-            Vector2 p2 = new Vector2(verts[i+5],verts[i+6]);
+            p1 = new Vector2(verts[i],verts[i+1]);
+            p2 = new Vector2(verts[i+5],verts[i+6]);
             shape.set(p1,p2);
             game.world.fixtures.add(game.world.body.createFixture(shape,5));
         }*/
 
-        //this is test img ball
-        //game.world.body2.createFixture(game.world.fixdef);
-        //game.world.body2.setUserData(testimg);
+        for(int i=startIndex;i < endIndex;i+=5){
+            p1.set(verts[i],verts[i+1]);
+            p2.set(verts[i+5],verts[i+6]);
+            shape.set(p1,p2);
+            game.world.fixtures.add(game.world.body.createFixture(shape,5));
+        }
 
-
-        //while(fixtures.size() > maxPhysics){
-            //body.destroyFixture(fixtures.get(0));
-            //fixtures.remove(0);
-        //}
-
-        //chain1.createChain(new Vector2[] {new Vector2(0,0f),new Vector2(10,4),new Vector2(20,2),new Vector2(0,100)});
-
-        /*MassData m = new MassData();
-        m.I = 100;
-        chain1.createChain(xyPoints);
-        fixdef.shape = chain1;
-        game.world.body.setSleepingAllowed(false);
-        game.world.body.setMassData(m);
-        game.world.body.createFixture(fixdef);
-        */
-        //game.world.fixtures.add(game.world.body.createFixture(shape,0));
+            game.world.endWall(p2.x,p2.y);
     }
 
-    public Vector2[] generateXY() {
+    private Vector2[] generateXY() {
         float yOffset = 350f;
         int index = 0;
         int j;
         int m = 0;
-        //System.out.println(j);
-        //xyPoints[8646] = new Vector2(0,0);
 
         xyPoints = new Vector2[1000];
 
@@ -437,48 +213,250 @@ public class TerrainV2  {
             //index += 20;
 
         }
-
-
-
-        System.out.println("LEN OF XY AND NORM " + xyPoints.length + "snd " + normfeed.length);
+        System.out.println("LEN OF XY AND NORM " + xyPoints.length + "and " + normfeed.length);
 
         return xyPoints;
+    }
+
+    private void initializeTextures() {
+        groundTexture = new Texture(Gdx.files.internal("ground.png"));
+        groundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+
+        surfaceTexture = new Texture(Gdx.files.internal("grass.png"));
+        surfaceTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+        surfaceTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    }
+
+    public Mesh generateMESH(int res){
+        Random r = new Random();
+        int LENGTH = 15;
+        //res (resolution) is the number of height-points
+        //minimum is 2, which will result in a box (under each height-point there is another vertex)
+        if (res < 2)
+            res = 2;
+
+        quad = new Mesh(Mesh.VertexDataType.VertexArray, true, 2 * res, (2*res-1)*6,
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"));
+
+
+        float x = 0f;     //current position to put vertices
+        float med = 0.3f; //starting y
+        float y = med;
+
+        float slopeWidth = (float) (LENGTH / ((float) (res - 1)))/25; //horizontal distance between 2 heightpoints
+        slopeWidth=0.1f;
+
+        float[] tempVer = new float[2*2*2*res]; //hold vertices before setting them to the mesh
+        float[] tempVerSurface = new float[2*2*2*res]; //hold vertices before setting them to the mesh
+        int offset = 0; //offset to put it in tempVer
+        int offset2 = 0;
+        float[] tempVer2 = new float[2*res];
+        int flahUp = 0;
+
+
+        for (int i = 0; i<res; i++) {
+
+            //tempVer[offset+0] = x;      tempVer[offset+1] = 0; // below height
+            //tempVer[offset+2] = x;      tempVer[offset+3] = 0; // below height
+
+            tempVer[offset+0] = (x/80);      tempVer[offset+1] = normfeed[i]; // below height
+            tempVer[offset+2] = x;      tempVer[offset+3] = 0; // below height
+
+            //tempVer[offset+4] = x;      tempVer[offset+5] = y;  // height
+            //tempVer[offset+6] = x;      tempVer[offset+7] = y;  // height
+
+            tempVer[offset+4] = (x+=35)/80;      tempVer[offset+5] = 0;  // height
+            tempVer[offset+6] = x;     tempVer[offset+7] = normfeed[i+1];  // height
+
+            //tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height original
+            //tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = y-0.02f; // below height
+
+            tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .06f; // below height
+            tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = 1f; // below height
+
+            //tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+0.015f;  // height original
+            //tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = y+0.015f;  // height
+
+            tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+2;// height
+            tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = 0;  // height
+
+            //tempVer2[offset2+0] = x;      tempVer2[offset2+1] = 0f; // below height
+            tempVer2[offset2+0] = x;      tempVer2[offset2+1] = y; // below height
+            //next position:
+            //x += slopeWidth;
+            if(flahUp < 20) {
+                //y += (r.nextFloat()*10)/200;
+            }else {
+               // y -= (r.nextFloat()*6)/200;
+            }
+            flahUp++;
+            if(flahUp > 35) flahUp = 0;
+
+            offset +=8;
+            offset2 +=2;
+        }
+
+        quad.setVertices(tempVer);
+
+        // INDICES
+        short[] tempIn = new short[(2*res-1)*6];
+        offset = 0;
+        for (int i = 0; i<2*res-2; i+=2) {
+
+            tempIn[offset + 0] = (short) (i);       // below height
+            tempIn[offset + 1] = (short) (i + 2);   // below next height
+            tempIn[offset + 2] = (short) (i + 1);   // height
+
+            tempIn[offset + 3] = (short) (i + 1);   // height
+            tempIn[offset + 4] = (short) (i + 2);   // below next height
+            tempIn[offset + 5] = (short) (i + 3);   // next height
+
+            offset+=6;
+        }
+
+        quad.setIndices(tempIn);
+
+        return quad;
     }
 
 
     public void render () {
         Gdx.gl.glClearColor(0, 0, 1, 1);
         float dt = Gdx.graphics.getDeltaTime();
+        gdxBlends();
+        multiAct(dt);
+        game.r.render();
+        shaderProgram.begin();
+        shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
+        groundTexture.bind(0);
+        shaderProgram.setUniformi("u_texture", 0);
+        quad.render(shaderProgram, GL20.GL_TRIANGLES);
+        shaderProgram.end();
+        setCamPos();
+        //dPadInit();
+        swipeInit();
+    }
+
+    private void gdxBlends(){
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
         Gdx.gl20.glEnable(GL20.GL_BLEND);
         Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        //batch.begin();
-        //batch.setShader(shaderProgram);
-        //batch.draw(sprite,sprite.getX(),sprite.getY(),sprite.getWidth(),sprite.getHeight());
-        //batch.end();
-        //quad.render(shaderProgram,GL20.GL_TRIANGLES);
-        //img.bind();
-        game.r.render();
-        //System.out.println("CAMERA: " + game.world.stage.getCamera().position);
-        //System.out.println("ELIDE: " + elide.getX() + " " + elide.getY());
+    }
 
-        /*shaderProgram.begin();
-        shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
-        shaderProgram.setUniformi("u_texture", 0);
-        mesh.render(shaderProgram, GL20.GL_TRIANGLE_STRIP);
-        //quad.render(shaderProgram,GL20.GL_TRIANGLE_STRIP);
-        shaderProgram.end();*/
+    private void multiAct(float dt){
         elide.act(dt);
-        dpad.act(dt);
+        //dpad.act(dt);
         game.world.update(dt);
-        dpad.debug.begin();
-        dpad.drawDebug(dpad.debug);
-        dpad.debug.end();
-        //testimg.setPosition(game.world.body2.getPosition().x,game.world.body2.getPosition().y);
-        game.world.viewport.getCamera().position.set(elide.getX(),elide.getY(),0);
-        //game.test.setAutoShapeType(true);
+    }
 
+    private void setCamPos(){
+        game.world.stage.getViewport().getCamera().position.set(elide.getX(),elide.getY()+1.6f,0);
+        img.setBounds(game.world.stage.getCamera().position.x-1.7f,game.world.stage.getCamera().position.y-2.5f,game.world.stage.getCamera().viewportWidth+1,game.world.stage.getCamera().viewportHeight);
+    }
+
+    private void dPadInit(){
+
+        dpad.getUpImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-1f);
+        dpad.getDownImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-2f);
+        dpad.getRightImg().setPosition(game.world.stage.getCamera().position.x-.5f,game.world.stage.getCamera().position.y-1.5f);
+        dpad.getLeftImg().setPosition(game.world.stage.getCamera().position.x-1.5f,game.world.stage.getCamera().position.y-1.5f);
+
+        if(dpad.getTouchUp()){
+            elide.getElideBody().applyForceToCenter(0,100,true);
+            elide.getBoardBody().applyForceToCenter(0,100,true);
+        }
+
+        if(dpad.getTouchDown()){
+            elide.getElideBody().applyForceToCenter(0,-100,true);
+            elide.getBoardBody().applyForceToCenter(0,-100,true);
+        }
+
+        if(dpad.getTouchLeft() && elide.getElideBody().getLinearVelocity().x > -MAX_VELOCITY){
+            //elide.getElideBody().applyForceToCenter(-100,0,true);
+            //elide.getBoardBody().applyForceToCenter(-100,0,true);
+            //elide.getElideBody().applyLinearImpulse(-.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            elide.getBoardBody().applyLinearImpulse(-.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            //elide.getElideBody().applyTorque(-500,true);
+        }
+
+        if(dpad.getTouchRight() && elide.getElideBody().getLinearVelocity().x < MAX_VELOCITY){
+            //elide.getElideBody().applyForceToCenter(100,0,true);
+            //elide.getBoardBody().applyForceToCenter(100,0,true);
+            //elide.getElideBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            elide.getElideBody().applyTorque(-600,true);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            // Do something
+            game.pause();
+        }
+    }
+
+    private void swipeInit(){
+        tris.endcap = 20f;
+        //the thickness of the line
+        tris.thickness = 80f;
+        //generate the triangle strip from our path
+        tris.update(game.swipe.path());
+        //the vertex color for tinting, i.e. for opacity
+        tris.color = Color.WHITE;
+        //render the triangles to the screen
+        tex.bind();
+        tris.draw(game.world.stage.getCamera());
+
+        drawDebug();
+
+    }
+
+    //optional debug drawing..
+    void drawDebug() {
+        Array<Vector2> input = game.swipe.input();
+
+        //draw the raw input
+        shapes.begin(ShapeRenderer.ShapeType.Line);
+        shapes.setColor(Color.GRAY);
+        for (int i=0; i<input.size-1; i++) {
+            Vector2 p = input.get(i);
+            Vector2 p2 = input.get(i+1);
+            shapes.line(p.x, p.y, p2.x, p2.y);
+        }
+        shapes.end();
+
+        //draw the smoothed and simplified path
+        shapes.begin(ShapeRenderer.ShapeType.Line);
+        shapes.setColor(Color.RED);
+        Array<Vector2> out = game.swipe.path();
+        for (int i=0; i<out.size-1; i++) {
+            Vector2 p = out.get(i);
+            Vector2 p2 = out.get(i+1);
+            shapes.line(p.x, p.y, p2.x, p2.y);
+        }
+        shapes.end();
+
+
+        //render our perpendiculars
+        shapes.begin(ShapeRenderer.ShapeType.Line);
+        Vector2 perp = new Vector2();
+
+        for (int i=1; i<input.size-1; i++) {
+            Vector2 p = input.get(i);
+            Vector2 p2 = input.get(i+1);
+
+            shapes.setColor(Color.LIGHT_GRAY);
+            perp.set(p).sub(p2).nor();
+            perp.set(perp.y, -perp.x);
+            perp.scl(10f);
+            shapes.line(p.x, p.y, p.x+perp.x, p.y+perp.y);
+            perp.scl(-1f);
+            shapes.setColor(Color.BLUE);
+            shapes.line(p.x, p.y, p.x+perp.x, p.y+perp.y);
+        }
+        shapes.end();
+    }
+
+    public void dispose(){
     }
 
 }

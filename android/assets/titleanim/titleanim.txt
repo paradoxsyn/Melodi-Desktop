@@ -1,0 +1,75 @@
+titleanim.png
+size: 466, 1629
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+melodi
+  rotate: false
+  xy: 1, 1
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 0
+melodi
+  rotate: false
+  xy: 1, 1
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 1
+melodi
+  rotate: false
+  xy: 1, 182
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 2
+melodi
+  rotate: false
+  xy: 1, 363
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 3
+melodi
+  rotate: false
+  xy: 1, 544
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 4
+melodi
+  rotate: false
+  xy: 1, 725
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 5
+melodi
+  rotate: false
+  xy: 1, 906
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 6
+melodi
+  rotate: false
+  xy: 1, 1087
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 7
+melodi
+  rotate: false
+  xy: 1, 1268
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 8
+melodi
+  rotate: false
+  xy: 1, 1449
+  size: 464, 179
+  orig: 1024, 512
+  offset: 275, 173
+  index: 9

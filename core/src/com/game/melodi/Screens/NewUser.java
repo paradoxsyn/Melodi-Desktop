@@ -8,16 +8,19 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.game.melodi.Animations.Background;
 import com.game.melodi.Melodi;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
@@ -42,7 +45,10 @@ public class NewUser extends ScreenAdapter {
     TextButton submit;
     TextField name,password,email;
     int w,h;
-    Label l1,l2,l3;
+    Label l1,l2,l3,l4,l5,l6;
+    Dialog dialog;
+    Image bg,bg2;
+    boolean next;
 
     private BitmapFont font;
     private TextureAtlas buttonsAtlas; //** image of buttons **//
@@ -52,7 +58,7 @@ public class NewUser extends ScreenAdapter {
     private Label.LabelStyle lstyle;
     private Window.WindowStyle wstyle;
 
-    MongoCollection<Document> players = game.server.mongodb.getCollection("username");
+    //MongoCollection<Document> players = game.server.mongodb.getCollection("username");
     private FindIterable<Document> iterable;
     private String user;
 
@@ -64,6 +70,10 @@ public class NewUser extends ScreenAdapter {
         this.game = game;
         inputTable = new Table();
         metalskin = new Skin(Gdx.files.internal("metal-ui.json"));
+        bg = new Image(new TextureRegion(new Texture("signuser.png")));
+        bg2 = new Image(new TextureRegion(new Texture("glosser.png")));
+        bg.setBounds(Gdx.graphics.getWidth()/14,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        bg2.setBounds(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
         w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
@@ -102,13 +112,22 @@ public class NewUser extends ScreenAdapter {
         l1 = new Label("",lstyle);
         l2 = new Label("",lstyle);
         l3 = new Label("",lstyle);
+        l4 = new Label("Username",lstyle);
+        l5 = new Label("Password",lstyle);
+        l6 = new Label("Email",lstyle);
 
+        inputTable.add(l4);
+        inputTable.row();
         inputTable.add(name).width(200).height(100).fill().pad(20);
         inputTable.add(l1);
         inputTable.row().pad(20);
+        inputTable.add(l5);
+        inputTable.row();
         inputTable.add(password).width(200).height(100).fill();
         inputTable.add(l2);
         inputTable.row().pad(20);
+        inputTable.add(l6);
+        inputTable.row();
         inputTable.add(email).width(200).height(100).fill();
         inputTable.add(l3);
         inputTable.row().pad(20);
@@ -116,12 +135,15 @@ public class NewUser extends ScreenAdapter {
 
         inputTable.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
 
+        game.stage.addActor(bg2);
+        game.stage.addActor(bg);
         game.stage.addActor(inputTable);
 
         submit();
 
 
     }
+
 
     public void submit(){
 
@@ -137,16 +159,7 @@ public class NewUser extends ScreenAdapter {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.log("my app", "Released");
                 System.out.println(user);
-                if(!checkUser()) {
-                    l1.setText("");
-                    addRecord("username", name.getText());
-                    id = name.getText();
-                    prefs.putString("ID",id);
-                    prefs.putBoolean("existing",true);
-                    prefs.flush();
-                    System.out.println(prefs.getBoolean("existing"));
-                    System.out.println(prefs.getString("ID"));
-
+                if(!checkUser() && checkFields()) {
                     complete();
                 }
 
@@ -193,22 +206,43 @@ public class NewUser extends ScreenAdapter {
     }
 
     public void addRecord(String key, String value){
-        players.insertOne(new Document().append(key,value)
+
+        game.server.mongodb.getCollection("username").insertOne(new Document().append(key,value)
         .append("password",password.getText())
         .append("email",email.getText()));
 
     }
 
-    public void complete(){
-        Dialog dialog = new Dialog("Warning", metalskin, "dialog") {
+    public boolean complete(){
+         dialog = new Dialog("Confirm", metalskin, "dialog") {
             public void result(Object obj) {
                 System.out.println("result "+obj);
+                if(obj.equals(true)){
+                    l1.setText("");
+                    addRecord("username", name.getText());
+                    id = name.getText();
+                    prefs.putString("ID", id);
+                    prefs.putBoolean("existing", true);
+                    prefs.flush();
+                    System.out.println(prefs.getBoolean("existing"));
+                    System.out.println(prefs.getString("ID"));
+                    dispose();
+                    next = true;
+                    game.setScreen(new Menu(game));
+                }
+                else{
+                    next = false;
+                    dialog.hide();
+                    dialog.cancel();
+                }
             }
         };
-        dialog.text("Are you sure you want to quit?");
+        dialog.text("Submit this info?");
         dialog.button("Yes", true); //sends "true" as the result
         dialog.button("No", false);  //sends "false" as the result
         dialog.show(game.stage);
+
+        return next;
     }
 
 
@@ -229,6 +263,8 @@ public class NewUser extends ScreenAdapter {
     }
 
     public void dispose(){
-        game.stage.dispose();
+        metalskin.dispose();
+        game.stage.clear();
+
     }
 }

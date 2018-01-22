@@ -1,0 +1,61 @@
+elidecool.png
+size: 73, 1005
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+elidecool
+  rotate: false
+  xy: 1, 256
+  size: 71, 123
+  orig: 140, 140
+  offset: 28, 13
+  index: 0
+elidecool
+  rotate: false
+  xy: 1, 129
+  size: 71, 125
+  orig: 140, 140
+  offset: 28, 13
+  index: 1
+elidecool
+  rotate: false
+  xy: 1, 381
+  size: 71, 123
+  orig: 140, 140
+  offset: 28, 13
+  index: 2
+elidecool
+  rotate: false
+  xy: 1, 506
+  size: 71, 123
+  orig: 140, 140
+  offset: 28, 13
+  index: 3
+elidecool
+  rotate: false
+  xy: 1, 1
+  size: 71, 126
+  orig: 140, 140
+  offset: 28, 11
+  index: 4
+elidecool
+  rotate: false
+  xy: 1, 631
+  size: 71, 123
+  orig: 140, 140
+  offset: 28, 13
+  index: 5
+elidecool
+  rotate: false
+  xy: 1, 756
+  size: 71, 123
+  orig: 140, 140
+  offset: 28, 13
+  index: 6
+elidecool
+  rotate: false
+  xy: 1, 881
+  size: 71, 123
+  orig: 140, 140
+  offset: 28, 13
+  index: 7

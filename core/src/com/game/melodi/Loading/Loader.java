@@ -3,6 +3,7 @@ package com.game.melodi.Loading;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,17 +12,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.game.melodi.Animations.AnimatedImage;
-import com.game.melodi.Animations.AnimatedImage2;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.game.melodi.Audiostream.AudioDevicePlayer2;
 import com.game.melodi.Audiostream.File;
+import com.game.melodi.Audiostream.FileHandleInputStreamFactory;
+import com.game.melodi.Audiostream.MP3InputStreamFactory;
 import com.game.melodi.Input.MyTextInputListener;
 import com.game.melodi.Maps.TmapGen;
 import com.game.melodi.Maps.TmapParse;
 import com.game.melodi.Melodi;
 import com.game.melodi.Screens.Test;
+
+import java.io.IOException;
 
 import static com.game.melodi.Melodi.player;
 
@@ -49,13 +53,25 @@ public class Loader extends ScreenAdapter {
 
     private TmapParse tmappar;
     private TmapGen tmap;
+    FileHandle file;
+    AudioDevicePlayer2 dplayer;
 
 
-    public Loader(Melodi game){
+    public Loader(Melodi game, FileHandle file){
         //super(game);
         this.game = game;
+        this.file = file;
         game.manager = new AssetManager();
+        try {
+            dplayer = new com.game.melodi.Audiostream.AudioDevicePlayer2(
+                    new com.game.melodi.Audiostream.MP3InputStreamFactory(
+                            new FileHandleInputStreamFactory(file)
+                    ), file.path());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
+
 
     public void loadSongMenu(){
         /*TextureAtlas songSelect;
@@ -81,6 +97,7 @@ public class Loader extends ScreenAdapter {
         game.manager.load("dpaddown.png", Texture.class);
         game.manager.load("dpadleft.png", Texture.class);
         game.manager.load("dpadright.png", Texture.class);
+        game.manager.load("darkcave.png", Texture.class);
     }
 
     public void popup(){
@@ -123,8 +140,8 @@ public class Loader extends ScreenAdapter {
         stage.addActor(loadingBar);
         stage.addActor(loadingBg);
         stage.addActor(loadingBarHidden);
-        //stage.addActor(loadingFrame);
-        //stage.addActor(logo);
+        stage.addActor(loadingFrame);
+        stage.addActor(logo);
 
         // Add everything to be loaded, for instance:
         // game.manager.load("data/assets1.pack", TextureAtlas.class);
@@ -139,13 +156,15 @@ public class Loader extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         // Set our screen to always be XXX x 480 in size
-        width = 480 * width / height;
-        height = 480;
+        //width = 480 * width / height;
+        //height = 480;
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
 
-        //Viewport v = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),camera);
-        //stage.setViewport(v);
-        //v.update(width,height);
-        //v.update(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        Viewport v = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage.getCamera());
+        stage.setViewport(v);
+        v.update(width,height);
+        v.update(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
         // Make the background fill the screen
         screenBg.setSize(width, height);
@@ -190,11 +209,16 @@ public class Loader extends ScreenAdapter {
             percent = Interpolation.linear.apply(percent, player.player.getFeedPosition(), 0.1f);
         }else{
             System.out.println("finished loading, load lvl");
-            game.setScreen(new Test(game));
+            game.setScreen(new Test(game,dplayer));
+            title = player.player.getTitle();
+            System.out.println(file.toString());
+            System.out.println(file.path());
             //this is playing a seperate thread from the actual loaded song data
             //game.playerstream.loadTrack(new File("furelise.mp3"),0,false);
-            game.playerstream.loadTrack(new File("jetsetrun.mp3"),0,false);
-            System.out.println("LLLLLLL? " + game.playerstream.getTotalLength());
+            //game.playerstream.loadTrack(new File("jetsetrun.mp3"),0,false);
+            //game.playerstream.loadTrack(new File(file.toString()),0,false);
+            dplayer.play();
+            //System.out.println("LLLLLLL? " + game.playerstream.getTotalLength());
         }
         // Update positions (and size) to match the percentage
         loadingBarHidden.setX(startX + endX * percent);
@@ -212,6 +236,7 @@ public class Loader extends ScreenAdapter {
         //tmap = new TmapGen(game.playerstream.getTotalLength(),title);
         tmappar = new TmapParse(game);
     }
+
 
     @Override
     public void hide() {

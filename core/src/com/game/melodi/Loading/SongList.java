@@ -55,6 +55,8 @@ public class SongList {
     private TextButton.TextButtonStyle stylebutton;
     private ScrollPane scroll;
     int i;
+    boolean empty=false;
+    FileHandle file;
 
     public SongList(Melodi game){
         this.game = game;
@@ -70,7 +72,7 @@ public class SongList {
         String path = game.extPath.getAbsolutePath();
 
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            begin = Gdx.files.absolute(path);
+            begin = Gdx.files.absolute(path+"/Music");
             //begin = Gdx.files.external("/0");
         }
         else if(Gdx.app.getType() == Application.ApplicationType.iOS){
@@ -85,14 +87,19 @@ public class SongList {
 
         files = begin.list();
 
+        try{
+            begin = Gdx.files.absolute(files[0].path());
+        }catch (ArrayIndexOutOfBoundsException e){
+            empty = true;
+            songnames.add("This folder is empty!");
+        }
+
+        //files = begin.list();
+
         setSkin();
         getHandles();
         setTable();
 
-
-        begin = Gdx.files.absolute(files[0].path());
-
-        files = begin.list();
         //System.out.println(files.length);
         //System.out.println(handles);
         //System.out.println(files[0]);
@@ -103,17 +110,17 @@ public class SongList {
         for(FileHandle f: files){
             if(f.isDirectory()){
                 Gdx.app.log("Loop","It's a folder");
-                /*for(int i=0;i<files.length;i++){
-
-                }*/
-                songname = f.name();
-                songnames.add(songname);
+                //Dont want to display this
 
             }
             else{
                 Gdx.app.log("Loop","File");
                 System.out.println("Added");
                 handles.add(f);
+                songname = f.name();
+                songnames.add(songname);
+
+
             }
         }
     }
@@ -121,18 +128,29 @@ public class SongList {
     private void setTable(){
 
         button = new TextButton(songname,stylebutton);
-        for(i=0;i<songnames.size;i++){
-            button = new TextButton(songnames.get(i),stylebutton);
-            button.addListener(new InputListener(){
-                @Override
-                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    //return super.touchDown(event, x, y, pointer, button);
-                    player.startPlaying(songnames.get(i));
-                    game.setScreen(new Loader(game));
-                    return true;
-                }
-            });
-            buttons.add(button);
+
+        if(!empty) {
+            for (i = 0; i < songnames.size; i++) {
+                button = new TextButton(songnames.get(i), stylebutton);
+                button.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        //return super.touchDown(event, x, y, pointer, button);
+                        file = Gdx.files.external("/Music/"+songnames.get(i-1));
+                        //file.copyTo(Gdx.files.local(""));
+                        //file = Gdx.files.local(songnames.get(i-1));
+                        return true;
+                    }
+
+                    @Override
+                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                        //super.touchUp(event, x, y, pointer, button);
+                        player.startPlaying2(songnames.get(i-1));
+                        game.setScreen(new Loader(game,file));
+                    }
+                });
+                buttons.add(button);
+            }
         }
         table.setSize(button.getWidth()*2,button.getHeight());
         scroll.setSize(button.getWidth()*2,button.getHeight()*3);
@@ -176,4 +194,5 @@ public class SongList {
         //button = new TextButton("Load elise", stylebutton);
 
     }
+
 }

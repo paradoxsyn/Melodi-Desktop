@@ -50,6 +50,17 @@ public class MusicPlayer
         }
     }
 
+    public void startPlaying2(final String filename){
+
+        try {
+            setupPlayer2(filename);
+            playFrom(0);
+        }
+        catch (JavaLayerException ex) {
+            reportProblem();
+        }
+    }
+
     /**Gets the current filename
      *
      * @return
@@ -140,6 +151,28 @@ public class MusicPlayer
      * @param filename The name of the file to play.
      */
     private void setupPlayer(String filename)
+{
+    try {
+        if(player != null) {
+            killPlayer();
+        }
+        this.filename = filename;
+        //player = new MusicFilePlayer(filename);
+        player = new MusicFilePlayer(File.internal(filename));
+    }
+    catch(JavaLayerException e) {
+        System.out.println("Problem setting up player");
+        e.printStackTrace();
+        reportProblem();
+        killPlayer();
+    }
+}
+
+    /**Other player for one main file source
+     *
+     */
+
+    private void setupPlayer2(String filename)
     {
         try {
             if(player != null) {
@@ -147,7 +180,7 @@ public class MusicPlayer
             }
             this.filename = filename;
             //player = new MusicFilePlayer(filename);
-            player = new MusicFilePlayer(File.internal(filename));
+            player = new MusicFilePlayer(File.external("/Music/"+filename));
         }
         catch(JavaLayerException e) {
             System.out.println("Problem setting up player");

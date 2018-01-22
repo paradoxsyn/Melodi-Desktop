@@ -84,7 +84,8 @@ public class AudioDevicePlayer2 extends AudioDevicePlayer {
 			//float prevAt = 0;
 			int prevAtFP = 0; //16.16fixed point
 			int pitchFP; //16.16fixed point
-			adl.requestSync(thisAudioDevicePlayer);
+			//TODO RENABLE THISadl.requestSync(thisAudioDevicePlayer);
+
 			synchronized (currentStreamLock) {
 			try {
 				while (!toStop) {
@@ -132,7 +133,7 @@ public class AudioDevicePlayer2 extends AudioDevicePlayer {
 						
 						System.out.println("Latency: " + ad.getLatency() + " sr:" + sampleRate);
 						latency = ad.getLatency() / sampleRate;
-						adl.requestSync(thisAudioDevicePlayer);
+						//TODO RENABLETHISadl.requestSync(thisAudioDevicePlayer);
 					}
 					ad.setVolume(volume);
 					pitchFP = (int) (pitch*0x10000);
@@ -222,7 +223,7 @@ public class AudioDevicePlayer2 extends AudioDevicePlayer {
 						samplePos+=len;
 						
 						if(!audioUsed){
-							adl.requestSync(thisAudioDevicePlayer);
+							//TODO RENABLEadl.requestSync(thisAudioDevicePlayer);
 							audioUsed = true;
 						}
 					} else if (len > 0) {
@@ -251,7 +252,7 @@ public class AudioDevicePlayer2 extends AudioDevicePlayer {
 			if(stop){
 				closeStream();
 				System.out.println("Track  Complete");
-				adl.complete(thisAudioDevicePlayer);
+				//TODO RENadl.complete(thisAudioDevicePlayer);
 			}
 		}
 			decrementThreadCount();

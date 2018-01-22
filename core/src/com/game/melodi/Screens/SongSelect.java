@@ -94,7 +94,7 @@ public class SongSelect extends ScreenAdapter {
         //table.setOrigin(Gdx.graphics.getWidth()-350,95);
         //table.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-500);
         //scrollTable.setOrigin(Gdx.graphics.getWidth()-450,95);
-        scrollTable.setPosition(Gdx.graphics.getWidth()-450,Gdx.graphics.getHeight()-800);
+        scrollTable.setPosition(Gdx.graphics.getWidth()/1.7f,Gdx.graphics.getHeight()/3);
 
 
     }
@@ -136,11 +136,11 @@ public class SongSelect extends ScreenAdapter {
                                    Gdx.app.log("my app", "Rggggggeleased");
 
                                    //load song selection
-                                   player.startPlaying("jetsetrun.mp3");
+                                   player.startPlaying("furelise.mp3");
                                    title = player.player.getTitle();
-                                   file = Gdx.files.local(title);
+                                   file = Gdx.files.internal(title);
                                    dispose();
-                                   game.setScreen(new Loader(game));
+                                   game.setScreen(new Loader(game,file));
 
 
                                }

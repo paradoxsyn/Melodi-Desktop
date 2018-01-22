@@ -7,6 +7,6 @@ import com.game.melodi.Melodi;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Melodi(), config);
+		new LwjglApplication(new Melodi(new ), config);
 	}
 }

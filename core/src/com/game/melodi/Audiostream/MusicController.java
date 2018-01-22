@@ -174,6 +174,18 @@ public class MusicController {
         return player.music.getEnd();
     }
 
+    public void pause(){
+        player.pause();
+    }
+
+    public void resume(){
+        player.music.resume();
+    }
+
+    public void dispose(){
+        player.music.dispose();
+    }
+
     public static int fullFeed(){
         return player.music.fullFeed();
     }

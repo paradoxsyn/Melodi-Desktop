@@ -43,6 +43,9 @@ public class MixRender {
         renderer.render(world.world, camera.combined);
         // game stage rendering
         world.stage.draw();
+        world.uistage.draw();
+
+
     }
 
     public void resize(int w, int h){
