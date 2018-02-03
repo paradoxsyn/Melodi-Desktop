@@ -37,17 +37,22 @@ public class MixRender {
         // have the camera follow char
         //camera.position.x = world.bob.body.getPosition().x;
         //camera.position.y = world.bob.body.getPosition().y;
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // box2d debug renderering (optional)
         renderer.render(world.world, camera.combined);
         // game stage rendering
         world.stage.draw();
-        world.uistage.draw();
 
 
     }
 
+    public void uirender(){
+        world.uistage.draw();
+    }
+    public void backrender(){
+        world.backgroundstage.draw();
+    }
     public void resize(int w, int h){
 
     }

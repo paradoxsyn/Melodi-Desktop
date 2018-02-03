@@ -10,11 +10,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 public class SwipeTriStrip {
 
-    Array<Vector2> texcoord = new Array<Vector2>();
-    Array<Vector2> tristrip = new Array<Vector2>();
+    public Array<Vector2> texcoord = new Array<Vector2>();
+    public Array<Vector2> tristrip = new Array<Vector2>();
     int batchSize;
     Vector2 perp = new Vector2();
     public float thickness = 30f;

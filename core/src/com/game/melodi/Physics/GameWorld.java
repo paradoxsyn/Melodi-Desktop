@@ -26,11 +26,11 @@ public class GameWorld {
 
 
 
-    public static final Vector2 GRAVITY = new Vector2(0, -3.8f);
+    public static final Vector2 GRAVITY = new Vector2(0, -6.8f);
 
-    public final Stage stage,uistage; // stage containing game actors (not GUI, but actual game elements)
+    public final Stage stage,uistage,backgroundstage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world
-    public List<Fixture> fixtures;
+    public List<Fixture> fixtures,smoothFixtures;
     public Body body,wallbody,endwallbody;
     public BodyDef bd;
     public FixtureDef wallfixdef,endwallfixdef;
@@ -50,7 +50,8 @@ public class GameWorld {
         //viewport = new FitViewport(UNIT_WIDTH,UNIT_HEIGHT);// set the game stage viewport to the meters size
         viewport = new StretchViewport(UNIT_WIDTH,UNIT_HEIGHT);
         stage = new Stage(viewport); // create the game stage
-        uistage = new Stage(viewport);
+        uistage = new Stage();
+        backgroundstage = new Stage();
         createWorld();
     }
 
@@ -58,6 +59,7 @@ public class GameWorld {
 
 
         fixtures = new ArrayList<>();
+        smoothFixtures = new ArrayList<>();
         bd = new BodyDef();
         wall = new PolygonShape();
         wallfixdef = new FixtureDef();
@@ -103,6 +105,7 @@ public class GameWorld {
         world.step(delta, 3, 3); // update box2d world
         stage.act(delta); // update game stage
         uistage.act(delta);
+        backgroundstage.act(delta);
     }
 
 

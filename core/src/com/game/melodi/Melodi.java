@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.game.melodi.Audiofullread.MusicPlayer;
 import com.game.melodi.Audiostream.MusicController;
 import com.game.melodi.Graphics.MixRender;
+import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Input.SwipeTriStrip;
 import com.game.melodi.Loading.PathInterface;
@@ -40,12 +41,10 @@ public class Melodi extends Game {
 	public static MusicPlayer player;
 	public PathInterface extPath;
 	public InputMultiplexer multi;
-	String storage;
+
 	//GUI Aspect
 	public static final int WIDTH=480; //1024
 	public static final int HEIGHT=800; //600
-
-	public static SwipeHandler swipe;
 
 	InputProcessor backProcessor;
 
@@ -70,15 +69,18 @@ public class Melodi extends Game {
 		player = new MusicPlayer();
 		server = new ServerStart();
 
-		swipe = new SwipeHandler(30);
-		swipe.minDistance = 10;
-
 		multi.addProcessor(stage);
 		multi.addProcessor(world.stage);
-		multi.addProcessor(swipe);
+		multi.addProcessor(world.uistage);
+
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(multi); //** stage is responsive **//
 		this.setScreen(new Menu(this));
+	}
+
+
+	public InputMultiplexer getMulti(){
+		return multi;
 	}
 
 

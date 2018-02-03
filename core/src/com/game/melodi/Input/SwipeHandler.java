@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.game.melodi.Maps.TerrainV2;
 
 
 public class SwipeHandler extends InputAdapter {
@@ -76,6 +77,7 @@ public class SwipeHandler extends InputAdapter {
         inputPoints.insert(lastPoint);
 
         resolve();
+        TerrainV2.stop = false;
         return true;
     }
 
@@ -87,6 +89,7 @@ public class SwipeHandler extends InputAdapter {
             inputindex=0;
         }
         resolve();
+        TerrainV2.stop = true;
         return false;
     }
 

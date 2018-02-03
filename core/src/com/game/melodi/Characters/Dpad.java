@@ -1,12 +1,18 @@
 package com.game.melodi.Characters;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.game.melodi.Melodi;
 
@@ -22,8 +28,13 @@ public class Dpad extends Image {
     Image up,down,left,right;
     Melodi game;
     Body elide,board;
+    Label score,time;
     public ShapeRenderer debug;
     private boolean holdup,holddown,holdleft,holdright;
+    private Label.LabelStyle lstyle;
+    private BitmapFont font;
+    private Skin metalskin; //** images are used as skins of the button **//
+
 
     public Dpad(Melodi game,Body elide, Body board){
         this.game = game;
@@ -31,8 +42,24 @@ public class Dpad extends Image {
         this.board = board;
 
         debug = new ShapeRenderer();
+        metalskin = new Skin(Gdx.files.internal("metal-ui.json"));
 
-        up = new Image(game.manager.get("dpadup.png",Texture.class));
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Pacifico.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParameter.size = 50;
+        fontParameter.minFilter = Texture.TextureFilter.Linear;
+        font = fontGenerator.generateFont(fontParameter);
+        //font.getData().setScale(1);
+        lstyle = metalskin.get(Label.LabelStyle.class);
+        lstyle.font = font;
+        lstyle.fontColor.set(Color.WHITE);
+
+        score = new Label("Score:",lstyle);
+        time = new Label("Time:",lstyle);
+        //score.setSize(1,1);
+
+
+        /*up = new Image(game.manager.get("dpadup.png",Texture.class));
         down = new Image(game.manager.get("dpaddown.png",Texture.class));
         left = new Image(game.manager.get("dpadleft.png",Texture.class));
         right = new Image(game.manager.get("dpadright.png",Texture.class));
@@ -48,133 +75,25 @@ public class Dpad extends Image {
         touchMove(elide,board);
 
 
-        game.world.stage.addActor(up);
-        game.world.stage.addActor(down);
-        game.world.stage.addActor(left);
-        game.world.stage.addActor(right);
+        game.world.uistage.addActor(up);
+        game.world.uistage.addActor(down);
+        game.world.uistage.addActor(left);
+        game.world.uistage.addActor(right);
+        */
+
+        game.world.uistage.addActor(score);
+        game.world.uistage.addActor(time);
     }
 
-    public void touchMove(final Body one, final Body two){
-        up.addListener(new InputListener(){
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Testmove");
-                //return super.touchDown(event, x, y, pointer, button);
-                //one.applyForce(100,0,0,0,true);
-                //two.applyForce(100,0,0,0,true);
-                holdup = true;
-                //elideModel.applyForceToCenter(50,50,false);
-                return true;
-            }
-
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //elideModel.setTransform(elideModel.getPosition().x,elideModel.getPosition().y+2,0);
-                System.out.println("pressed up");
-                holdup = false;
-                //elideModel.applyLinearImpulse(1,2,1,2,true);
-                //elideModel.applyForce(2,2,1,1,true);
-                //super.touchUp(event, x, y, pointer, button);
-            }
-            //public void touchDragged(InputEvent event, float x, float y, int pointer) {
-
-            //}
-        });
-
-        left.addListener(new InputListener(){
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Testmove");
-                //return super.touchDown(event, x, y, pointer, button);
-                //one.applyForce(100,0,0,0,true);
-                //two.applyForce(100,0,0,0,true);
-                holdleft = true;
-                //elideModel.applyForceToCenter(50,50,false);
-                return true;
-            }
-
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //elideModel.setTransform(elideModel.getPosition().x,elideModel.getPosition().y+2,0);
-                System.out.println("pressed up");
-                holdleft = false;
-                //elideModel.applyLinearImpulse(1,2,1,2,true);
-                //elideModel.applyForce(2,2,1,1,true);
-                //super.touchUp(event, x, y, pointer, button);
-            }
-            //public void touchDragged(InputEvent event, float x, float y, int pointer) {
-
-            //}
-        });
-
-        right.addListener(new InputListener(){
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Testmove");
-                //return super.touchDown(event, x, y, pointer, button);
-                //one.applyForce(100,0,0,0,true);
-                //two.applyForce(100,0,0,0,true);
-                holdright = true;
-                //elideModel.applyForceToCenter(50,50,false);
-                return true;
-            }
-
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //elideModel.setTransform(elideModel.getPosition().x,elideModel.getPosition().y+2,0);
-                holdright = false;
-                //elideModel.applyLinearImpulse(1,2,1,2,true);
-                //elideModel.applyForce(2,2,1,1,true);
-                //super.touchUp(event, x, y, pointer, button);
-            }
-            //public void touchDragged(InputEvent event, float x, float y, int pointer) {
-
-            //}
-        });
-
-        down.addListener(new InputListener(){
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                //return super.touchDown(event, x, y, pointer, button);
-                //one.applyForce(100,0,0,0,true);
-                //two.applyForce(100,0,0,0,true);
-                holddown = true;
-                //elideModel.applyForceToCenter(50,50,false);
-                return true;
-            }
-
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //elideModel.setTransform(elideModel.getPosition().x,elideModel.getPosition().y+2,0);
-                holddown = false;
-                //elideModel.applyLinearImpulse(1,2,1,2,true);
-                //elideModel.applyForce(2,2,1,1,true);
-                //super.touchUp(event, x, y, pointer, button);
-            }
-            //public void touchDragged(InputEvent event, float x, float y, int pointer) {
-
-            //}
-        });
-    }
-    public Image getUpImg(){
-        return up;
-    }
-    public Image getDownImg() {
-        return down;
-    }
-    public Image getLeftImg() {
-        return left;
-    }
-    public Image getRightImg() {
-        return right;
+    public Label getScore(){
+        return score;
     }
 
-    public boolean getTouchDown(){
-        return holddown;
-    }
-    public boolean getTouchRight(){
-        return holdright;
-    }
-    public boolean getTouchLeft(){
-        return holdleft;
-    }
-    public boolean getTouchUp(){
-        return holdup;
+    public Label getTime(){
+        return time;
     }
 
-    @Override
+
     public void act(float dt){
         super.act(dt);
         //up.setPosition(game.world.stage.getCamera().position.x+.7f,game.world.stage.getCamera().position.y+1);

@@ -1,7 +1,6 @@
 package com.game.melodi.Animations;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -11,14 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
  * Created by Paradox on 4/4/2017.
  */
 
-public class Background extends Actor {
+public class Background3 extends Actor {
     private final TextureRegion textureRegion;
     private final TextureRegion texflip;
     private Rectangle textureRegionBounds1;
     private Rectangle textureRegionBounds2;
     private int speed = 100;
+    public static boolean move = false;
 
-    public Background(TextureRegion tx) {
+    public Background3(TextureRegion tx) {
         //textureRegion = new TextureRegion(Assets.nightskyparallax);
         textureRegion = new TextureRegion(tx);
         texflip = new TextureRegion(tx);
@@ -32,6 +32,7 @@ public class Background extends Actor {
         if (leftBoundsReached(delta)) {
             resetBounds();
         } else {
+            if(move)
             updateXBounds(-delta);
         }
     }
@@ -58,7 +59,7 @@ public class Background extends Actor {
         super.draw(batch, parentAlpha);
         batch.draw(textureRegion, textureRegionBounds1.x, textureRegionBounds1.y, Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
-        batch.draw(texflip, textureRegionBounds2.x, textureRegionBounds2.y, Gdx.graphics.getWidth(),
+        batch.draw(textureRegion, textureRegionBounds2.x, textureRegionBounds2.y, Gdx.graphics.getWidth(),
         Gdx.graphics.getHeight());
     }
 

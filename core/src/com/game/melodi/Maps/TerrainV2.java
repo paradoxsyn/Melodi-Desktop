@@ -2,15 +2,18 @@ package com.game.melodi.Maps;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -23,12 +26,15 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+import com.game.melodi.Animations.Background3;
 import com.game.melodi.Audiostream.AudioDevicePlayer2;
 import com.game.melodi.Characters.Dpad;
 import com.game.melodi.Characters.Elide;
+import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Input.SwipeTriStrip;
 import com.game.melodi.Melodi;
+import com.uwsoft.editor.renderer.Overlap2D;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -37,14 +43,15 @@ import static com.game.melodi.Characters.Elide.MAX_VELOCITY;
 import static com.game.melodi.Melodi.player;
 import static com.game.melodi.Physics.GameWorld.UNIT_HEIGHT;
 import static com.game.melodi.Physics.GameWorld.UNIT_WIDTH;
-
 /**
  * Created by Paradox on 5/21/2017.
  */
 
 public class TerrainV2  {
+
+    boolean moving = false;
     SpriteBatch batch;
-    Image img;
+    Background3 img;
     float[] verts,meshverts;
     ShaderProgram shaderProgram;
     Mesh quad;
@@ -52,11 +59,19 @@ public class TerrainV2  {
     private int[] feed;
     int maxPhysics = 20000;
     private float[] normfeed;
+    public static boolean start,stop;
 
     Texture groundTexture,surfaceTexture;
 
     Vector2[] xyPoints;
     Vector2 p1,p2;
+    Vector2 pt1,pt2;
+    float ymid;
+    float ampl;
+    float totalSegs;
+    float da;
+    float dx;
+    float hSegments;
 
     Melodi game;
     Elide elide;
@@ -72,20 +87,35 @@ public class TerrainV2  {
 
     SwipeTriStrip tris;
     Texture tex;
-    ShapeRenderer shapes;
+
+    public SwipeHandler swipe;
+    SimpleDirectionGestureDetector list;
+    InputMultiplexer multi;
 
     public void init(Melodi game) {
         this.game = game;
-        img = new Image(game.manager.get("darkcave.png",Texture.class));
+        //img = new Image(game.manager.get("darkcave.png",Texture.class));
+        img = new Background3(new TextureRegion(game.manager.get("darkcave.png",Texture.class)));
         img.setBounds(0,0,UNIT_WIDTH,UNIT_HEIGHT);
-        //game.world.stage.addActor(img);
+        game.world.backgroundstage.addActor(img);
         batch = new SpriteBatch();
         elide = new Elide(game.world,game);
         dpad = new Dpad(game,elide.getElideBody(),elide.getBoardBody());
         maxPhysics = Gdx.graphics.getWidth()/20;
+        //stageListen();
+
+        this.multi = game.getMulti();
+
+        swipe = new SwipeHandler(25);
+        swipe.minDistance = 10;
 
         tris = new SwipeTriStrip();
         tex = new Texture("glosser.png");
+
+        swipeCheck();
+
+        multi.addProcessor(swipe);
+        multi.addProcessor(list);
 
         chain1 = new ChainShape();
         fixdef = new FixtureDef();
@@ -124,7 +154,7 @@ public class TerrainV2  {
             verts[id++] = 0f;
             verts[id++] = 1f;
 
-            verts[id++] = (x+=35)/80;
+            verts[id++] = (x+=70)/80;
             verts[id++] = normfeed[i+1];
             //verts[id++] =  feed[i];
             verts[id++] = 0;
@@ -150,13 +180,15 @@ public class TerrainV2  {
                 new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
         //quad.setVertices(meshverts);
         //quad.setIndices(indices);*/
+        dPadInit();
+
 
         updatePhysics(0,normfeed.length);
+        //smoothLines(0,normfeed.length);
         generateMESH(normfeed.length-1);
         System.out.println("Vertices "+ Arrays.toString(verts));
         System.out.println("chain info " + Arrays.toString(xyPoints));
 
-        shapes = new ShapeRenderer();
     }
 
     private void trackSync(){
@@ -166,6 +198,32 @@ public class TerrainV2  {
                 //game.world.cam.position.x += 25;
             }
         },0,3f);
+    }
+
+    private void smoothLines(int startIndex, int endIndex){
+        EdgeShape shape;
+        totalSegs = game.world.fixtures.size();
+        shape = new EdgeShape();
+        pt1 = new Vector2();
+        pt2 = new Vector2();
+
+        for(int i=startIndex;i < endIndex;i+=5){
+            pt1.set(verts[i],verts[i+1]);
+            pt2.set(verts[i+5],verts[i+6]);
+
+            hSegments = (int)Math.floor(pt2.x-pt1.x)/totalSegs;
+            //dx = (pt2.x - pt1.x) / hSegments;
+            da = MathUtils.PI / totalSegs;
+            ymid = (pt1.y + pt2.y) / 2;
+            ampl = (pt1.y - pt2.y) / 2;
+
+            //pt2.x = pt1.x + i*dx;
+            //pt2.y = ymid + ampl * MathUtils.cos();
+
+            shape.set(pt1,pt2);
+            game.world.smoothFixtures.add(game.world.body.createFixture(shape,5));
+        }
+
     }
 
     private void updatePhysics(int startIndex, int endIndex){
@@ -187,7 +245,6 @@ public class TerrainV2  {
             shape.set(p1,p2);
             game.world.fixtures.add(game.world.body.createFixture(shape,5));
         }
-
             game.world.endWall(p2.x,p2.y);
     }
 
@@ -227,6 +284,29 @@ public class TerrainV2  {
         surfaceTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
 
+    public void swipeCheck(){
+        list = new SimpleDirectionGestureDetector(new SimpleDirectionGestureDetector.DirectionListener() {
+            @Override
+            public void onLeft() {
+                System.out.println("LEFT");
+            }
+
+            @Override
+            public void onRight() {
+                System.out.println("thisworkeds");
+                //you may actually swipe right
+            }
+
+            @Override
+            public void onUp() {
+            }
+
+            @Override
+            public void onDown() {
+            }
+        });
+    }
+
     public Mesh generateMESH(int res){
         Random r = new Random();
         int LENGTH = 15;
@@ -261,12 +341,12 @@ public class TerrainV2  {
             //tempVer[offset+2] = x;      tempVer[offset+3] = 0; // below height
 
             tempVer[offset+0] = (x/80);      tempVer[offset+1] = normfeed[i]; // below height
-            tempVer[offset+2] = x;      tempVer[offset+3] = 0; // below height
+            tempVer[offset+2] = x;      tempVer[offset+3] = 1; // below height // I think UV was 0
 
             //tempVer[offset+4] = x;      tempVer[offset+5] = y;  // height
             //tempVer[offset+6] = x;      tempVer[offset+7] = y;  // height
 
-            tempVer[offset+4] = (x+=35)/80;      tempVer[offset+5] = 0;  // height
+            tempVer[offset+4] = (x+=70)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down
             tempVer[offset+6] = x;     tempVer[offset+7] = normfeed[i+1];  // height
 
             //tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height original
@@ -320,12 +400,21 @@ public class TerrainV2  {
         return quad;
     }
 
+    public void checkifMoving(){
+        if(elide.getBoardBody().isAwake()){
+            img.move = true;
+        }else{
+            img.move = false;
+        }
+    }
+
 
     public void render () {
-        Gdx.gl.glClearColor(0, 0, 1, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         float dt = Gdx.graphics.getDeltaTime();
-        gdxBlends();
+        //gdxBlends();
         multiAct(dt);
+        game.r.backrender();
         game.r.render();
         shaderProgram.begin();
         shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
@@ -333,9 +422,15 @@ public class TerrainV2  {
         shaderProgram.setUniformi("u_texture", 0);
         quad.render(shaderProgram, GL20.GL_TRIANGLES);
         shaderProgram.end();
+        game.r.uirender();
         setCamPos();
-        //dPadInit();
         swipeInit();
+        if(swipe.isDrawing){
+            startRun();
+        }
+        scaleOut();
+        checkifMoving(); //parallax checker
+
     }
 
     private void gdxBlends(){
@@ -347,18 +442,22 @@ public class TerrainV2  {
 
     private void multiAct(float dt){
         elide.act(dt);
-        //dpad.act(dt);
+        dpad.act(dt);
         game.world.update(dt);
     }
 
     private void setCamPos(){
-        game.world.stage.getViewport().getCamera().position.set(elide.getX(),elide.getY()+1.6f,0);
-        img.setBounds(game.world.stage.getCamera().position.x-1.7f,game.world.stage.getCamera().position.y-2.5f,game.world.stage.getCamera().viewportWidth+1,game.world.stage.getCamera().viewportHeight);
+        game.world.stage.getViewport().getCamera().position.set(elide.getX()+1,elide.getY()+1.6f,0);
+        game.world.stage.getViewport().getCamera().update();
     }
 
     private void dPadInit(){
 
-        dpad.getUpImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-1f);
+        dpad.getScore().setPosition(Gdx.graphics.getPpcX()-100 ,Gdx.graphics.getHeight()-100);
+        dpad.getTime().setPosition(Gdx.graphics.getPpcX()-100 ,Gdx.graphics.getHeight()-200);
+
+
+        /*dpad.getUpImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-1f);
         dpad.getDownImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-2f);
         dpad.getRightImg().setPosition(game.world.stage.getCamera().position.x-.5f,game.world.stage.getCamera().position.y-1.5f);
         dpad.getLeftImg().setPosition(game.world.stage.getCamera().position.x-1.5f,game.world.stage.getCamera().position.y-1.5f);
@@ -369,8 +468,11 @@ public class TerrainV2  {
         }
 
         if(dpad.getTouchDown()){
-            elide.getElideBody().applyForceToCenter(0,-100,true);
-            elide.getBoardBody().applyForceToCenter(0,-100,true);
+            //elide.getElideBody().applyForceToCenter(0,-100,true);
+            //elide.getBoardBody().applyForceToCenter(0,-100,true);
+            elide.getBoardBody().applyForce(5,-40,0,0,true);
+            elide.getElideBody().applyForce(5,-40,0,0,true);
+            System.out.println("DDD");
         }
 
         if(dpad.getTouchLeft() && elide.getElideBody().getLinearVelocity().x > -MAX_VELOCITY){
@@ -388,72 +490,46 @@ public class TerrainV2  {
             elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
             elide.getElideBody().applyTorque(-600,true);
         }
+
         if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
             // Do something
             game.pause();
-        }
+        }*/
+
     }
 
     private void swipeInit(){
-        tris.endcap = 20f;
+
+        tris.endcap = 35f;
         //the thickness of the line
         tris.thickness = 80f;
         //generate the triangle strip from our path
-        tris.update(game.swipe.path());
+        tris.update(swipe.path());
         //the vertex color for tinting, i.e. for opacity
         tris.color = Color.WHITE;
         //render the triangles to the screen
         tex.bind();
-        tris.draw(game.world.stage.getCamera());
 
-        drawDebug();
-
+        if(!stop)
+        tris.draw(game.stage.getCamera());
     }
 
-    //optional debug drawing..
-    void drawDebug() {
-        Array<Vector2> input = game.swipe.input();
-
-        //draw the raw input
-        shapes.begin(ShapeRenderer.ShapeType.Line);
-        shapes.setColor(Color.GRAY);
-        for (int i=0; i<input.size-1; i++) {
-            Vector2 p = input.get(i);
-            Vector2 p2 = input.get(i+1);
-            shapes.line(p.x, p.y, p2.x, p2.y);
+    private void startRun(){
+        if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY){
+            elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            //elide.getElideBody().applyTorque(-650,true);
+            elide.getElideBody().setFixedRotation(true);
         }
-        shapes.end();
+    }
 
-        //draw the smoothed and simplified path
-        shapes.begin(ShapeRenderer.ShapeType.Line);
-        shapes.setColor(Color.RED);
-        Array<Vector2> out = game.swipe.path();
-        for (int i=0; i<out.size-1; i++) {
-            Vector2 p = out.get(i);
-            Vector2 p2 = out.get(i+1);
-            shapes.line(p.x, p.y, p2.x, p2.y);
+    private void scaleOut(){
+
+        if(elide.getElideBody().getPosition().y > (game.world.stage.getCamera().viewportHeight * 3/4)){
+            ((OrthographicCamera)game.world.stage.getCamera()).zoom += 0.02f;
         }
-        shapes.end();
-
-
-        //render our perpendiculars
-        shapes.begin(ShapeRenderer.ShapeType.Line);
-        Vector2 perp = new Vector2();
-
-        for (int i=1; i<input.size-1; i++) {
-            Vector2 p = input.get(i);
-            Vector2 p2 = input.get(i+1);
-
-            shapes.setColor(Color.LIGHT_GRAY);
-            perp.set(p).sub(p2).nor();
-            perp.set(perp.y, -perp.x);
-            perp.scl(10f);
-            shapes.line(p.x, p.y, p.x+perp.x, p.y+perp.y);
-            perp.scl(-1f);
-            shapes.setColor(Color.BLUE);
-            shapes.line(p.x, p.y, p.x+perp.x, p.y+perp.y);
+        else if(((OrthographicCamera)game.world.stage.getCamera()).zoom > 1){
+            ((OrthographicCamera)game.world.stage.getCamera()).zoom -= 0.02f;
         }
-        shapes.end();
     }
 
     public void dispose(){

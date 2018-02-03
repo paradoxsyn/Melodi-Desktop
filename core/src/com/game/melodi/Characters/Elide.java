@@ -32,6 +32,7 @@ import com.game.melodi.Scrolling.SimpleDirectionGestureDetector;
 
 import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
+
 /**
  * Created by Paradox on 5/11/2017.
  */
@@ -54,7 +55,11 @@ public class Elide extends Image {
     public ShapeRenderer debug;
     public SpriteBatch batch;
 
-    public static final int MAX_VELOCITY = 15;
+    int nextVel;
+    Vector2[] prevVels;
+
+    public static final int MAX_VELOCITY = 10;
+    public final static int NUM_PREV_VELS = 5;
 
     public Elide(GameWorld world, Melodi game){
         // char is an Image, so we load the graphics from the assetmanager
@@ -63,6 +68,11 @@ public class Elide extends Image {
         Box2DSprite d;
         debug = new ShapeRenderer();
         batch = new SpriteBatch();
+
+        prevVels = new Vector2[NUM_PREV_VELS];
+        for(int i=0;i<prevVels.length;i++){
+            prevVels[i] = new Vector2(0,0);
+        }
 
         wheelShape = new CircleShape();
         wheelFix = new FixtureDef();
@@ -85,6 +95,7 @@ public class Elide extends Image {
         bd.position.set(world.body.getPosition().x+7,world.body.getPosition().y+3);
         bd.allowSleep  = true;
         bd.angularDamping = 2000;
+        bd.linearDamping = 0.5f;
 
         phybod = new PhysicsShapeCache("physics/boardphy.xml");
         elideModel = phybod.createBody("elideonboard",game.world.world,bd,.0055f,.0055f);
@@ -97,6 +108,7 @@ public class Elide extends Image {
         bd2.position.set(board.getX(),board.getY());
         bd2.allowSleep  = false;
         bd2.angularDamping = 2000;
+
 
         boardModel = phybod.createBody("boardmove",game.world.world,bd,.01f,.01f);
 
@@ -176,14 +188,33 @@ public class Elide extends Image {
     public void act(float delta) {
         // here we override Actor's act() method to make the actor follow the box2d body
         super.act(delta);
+
         Vector2 pos = elideModel.getPosition().sub(0,0);
         Vector2 boardpos = boardModel.getPosition().sub(0,0);
+
+        /*Vector2 vel = boardModel.getLinearVelocity();
+        Vector2 weightedVel = vel;
+
+        for(int i=0;i<NUM_PREV_VELS;++i){
+            weightedVel.x += prevVels[i].x;
+            weightedVel.y += prevVels[i].y;
+        }
+        weightedVel.x = weightedVel.x/NUM_PREV_VELS;
+        weightedVel.y = weightedVel.y/NUM_PREV_VELS;
+
+        prevVels[nextVel++] = vel;
+        if(nextVel >= NUM_PREV_VELS) nextVel = 0;
+
+        float angle = weightedVel.angle();*/
+        //For smoothing out velocities
+
         elide.setPosition(pos.x,pos.y);
         elide.setOrigin(elide.getMaxWidth()/2,elide.getMaxHeight()/2);
         elide.setRotation(elideModel.getAngle() * MathUtils.radiansToDegrees);
         board.setPosition(boardpos.x,boardpos.y);
         board.setOrigin(0,0);
         board.setRotation(boardModel.getAngle() * MathUtils.radiansToDegrees);
+        //board.setRotation(angle * MathUtils.radiansToDegrees);
 
         //leftWheel.getPosition().set(boardpos.x,boardpos.y-1);
         //rightWheel.getPosition().set(board.getWidth(),boardpos.y-1);

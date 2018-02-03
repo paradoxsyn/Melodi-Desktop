@@ -1,6 +1,7 @@
 package com.game.melodi.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
@@ -26,6 +27,8 @@ import com.game.melodi.Audiostream.File;
 import com.game.melodi.Audiostream.FileHandleInputStreamFactory;
 import com.game.melodi.Audiostream.MP3InputStreamFactory;
 import com.game.melodi.Characters.Elide;
+import com.game.melodi.Input.SimpleDirectionGestureDetector;
+import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Maps.LevelMap;
 import com.game.melodi.Maps.Terrain;
 import com.game.melodi.Maps.TerrainV2;
@@ -79,6 +82,7 @@ public class Test implements Screen {
         r = new ImmediateModeRenderer20(false,true,0);
         batch = new SpriteBatch();
         this.dplayer = dplayer;
+
 
         img = new Texture("badlogic.jpg");
         sprite = new Sprite(img);

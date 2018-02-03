@@ -48,10 +48,11 @@ public class ServerStart {
 
 
     public ServerStart() {
-        uri = new MongoClientURI("mongodb://paradoxsyn:shadow101@melodi-shard-00-00-qrcji.mongodb.net:27017,melodi-shard-00-01-qrcji.mongodb.net:27017,melodi-shard-00-02-qrcji.mongodb.net:27017/test?ssl=true&replicaSet=Melodi-shard-0&authSource=admin");
-        client = new MongoClient(uri);
+
         //If you want to start up a server
         if(checkConnection()){
+            uri = new MongoClientURI("mongodb://paradoxsyn:shadow101@melodi-shard-00-00-qrcji.mongodb.net:27017,melodi-shard-00-01-qrcji.mongodb.net:27017,melodi-shard-00-02-qrcji.mongodb.net:27017/test?ssl=true&replicaSet=Melodi-shard-0&authSource=admin");
+            client = new MongoClient(uri);
             mongoConnect();
             //loadUserCollection();
         }

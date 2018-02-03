@@ -8,13 +8,76 @@
 		<angular_damping>0</angular_damping>
 		<allow_sleep/>
 		<fixture>
-			<density>30</density>
-			<friction>0</friction>
+			<density>2</density>
+			<friction>.4</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
-			<polygon>80.0000, 50.0000, 6.0000, 50.0000, 9.0000, 45.0000, 76.0000, 45.0000</polygon>
+			<circle x="9.296" y="47.606" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="19.577" y="47.606" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="29.859" y="47.606" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="40.282" y="47.465" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="50.423" y="47.324" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="60.704" y="47.324" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="70.845" y="47.042" r="4.913"/>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>.4</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<circle x="78.376" y="47.306" r="4.913"/>
 		</fixture>
 	</body>
 
@@ -24,7 +87,7 @@
 		<angular_damping>0</angular_damping>
 		<allow_sleep/>
 		<fixture>
-			<density>20</density>
+			<density>2</density>
 			<friction>0</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>

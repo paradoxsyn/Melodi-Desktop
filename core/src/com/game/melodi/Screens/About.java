@@ -62,7 +62,7 @@ public class About extends ScreenAdapter {
                 "There is one pre-defined song named Fur Elise that will load a sample level, otherwise all\n" +
                 " the songs should show up by the tree.\n" +
                 "You can only use MP3's for now, other file functionality will be enabled in the future\n" +
-                "You use the arrow keys to move through the level once it loads.",lstyle);
+                "You tap and hold the screen to make your character move!",lstyle);
         label.setPosition(Gdx.graphics.getWidth()/2-600,Gdx.graphics.getHeight()-500);
 
         button.addListener(new InputListener() {
