@@ -53,6 +53,9 @@ public class MixRender {
     public void backrender(){
         world.backgroundstage.draw();
     }
+    public void pointrender(){
+        world.pointstage.draw();
+    }
     public void resize(int w, int h){
 
     }

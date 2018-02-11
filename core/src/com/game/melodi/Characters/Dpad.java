@@ -28,12 +28,15 @@ public class Dpad extends Image {
     Image up,down,left,right;
     Melodi game;
     Body elide,board;
-    Label score,time;
+    Label score,time,lifeNumber;
+    int totalScore, totalTime=0;
     public ShapeRenderer debug;
     private boolean holdup,holddown,holdleft,holdright;
     private Label.LabelStyle lstyle;
     private BitmapFont font;
     private Skin metalskin; //** images are used as skins of the button **//
+    Image life;
+    private int lifeNum=3;
 
 
     public Dpad(Melodi game,Body elide, Body board){
@@ -54,8 +57,14 @@ public class Dpad extends Image {
         lstyle.font = font;
         lstyle.fontColor.set(Color.WHITE);
 
-        score = new Label("Score:",lstyle);
-        time = new Label("Time:",lstyle);
+        score = new Label("Score: " + totalScore,lstyle);
+        time = new Label("Time: " + totalTime,lstyle);
+        lifeNumber = new Label(" x"+lifeNum,lstyle);
+        lifeNumber.setPosition(life.getX()+100,life.getY());
+
+        life = new Image(game.manager.get("lifeimg.png",Texture.class));
+        life.setSize(20,20);
+        life.setPosition(Gdx.graphics.getWidth()/2-200,Gdx.graphics.getHeight()-Gdx.graphics.getHeight()+100);
         //score.setSize(1,1);
 
 
@@ -81,8 +90,18 @@ public class Dpad extends Image {
         game.world.uistage.addActor(right);
         */
 
+
+
+
         game.world.uistage.addActor(score);
         game.world.uistage.addActor(time);
+        game.world.uistage.addActor(life);
+        game.world.uistage.addActor(lifeNumber);
+    }
+
+    private void addScore(){
+        totalScore+=1;
+        score.setText("Score: " + totalScore);
     }
 
     public Label getScore(){
@@ -93,9 +112,22 @@ public class Dpad extends Image {
         return time;
     }
 
+    public int getLifeNum(){
+        return lifeNum;
+    }
+
+    public int getTotalScore(){
+        return totalScore;
+    }
+
+    public int getTotalTime(){
+        return totalTime;
+    }
+
 
     public void act(float dt){
         super.act(dt);
+        addScore();
         //up.setPosition(game.world.stage.getCamera().position.x+.7f,game.world.stage.getCamera().position.y+1);
     }
 

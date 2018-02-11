@@ -1,6 +1,7 @@
 package com.game.melodi.Input;
 
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by RabitHole on 1/23/2018.
@@ -15,6 +16,10 @@ public class SimpleDirectionGestureDetector extends GestureDetector {
         void onUp();
 
         void onDown();
+
+        void onTap();
+
+        void onPinch();
     }
 
     public SimpleDirectionGestureDetector(DirectionListener directionListener) {
@@ -46,6 +51,17 @@ public class SimpleDirectionGestureDetector extends GestureDetector {
             return super.fling(velocityX, velocityY, button);
         }
 
+        @Override
+        public boolean tap (float x, float y, int count, int button){
+            directionListener.onTap();
+            return super.tap(x,y,count,button);
+        }
+
+        @Override
+        public boolean pinch (Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2){
+            directionListener.onPinch();
+            return super.pinch(initialPointer1,initialPointer2,pointer1,pointer2);
+        }
 
     }
 }

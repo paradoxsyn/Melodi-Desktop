@@ -34,6 +34,7 @@ import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Input.SwipeTriStrip;
 import com.game.melodi.Melodi;
+import com.game.melodi.Points.PointSystem;
 import com.uwsoft.editor.renderer.Overlap2D;
 
 import java.util.Arrays;
@@ -72,6 +73,7 @@ public class TerrainV2  {
     float da;
     float dx;
     float hSegments;
+    PointSystem points;
 
     Melodi game;
     Elide elide;
@@ -91,9 +93,11 @@ public class TerrainV2  {
     public SwipeHandler swipe;
     SimpleDirectionGestureDetector list;
     InputMultiplexer multi;
+    boolean fling;
 
     public void init(Melodi game) {
         this.game = game;
+        points = new PointSystem();
         //img = new Image(game.manager.get("darkcave.png",Texture.class));
         img = new Background3(new TextureRegion(game.manager.get("darkcave.png",Texture.class)));
         img.setBounds(0,0,UNIT_WIDTH,UNIT_HEIGHT);
@@ -114,8 +118,8 @@ public class TerrainV2  {
 
         swipeCheck();
 
-        multi.addProcessor(swipe);
         multi.addProcessor(list);
+        multi.addProcessor(swipe);
 
         chain1 = new ChainShape();
         fixdef = new FixtureDef();
@@ -293,16 +297,29 @@ public class TerrainV2  {
 
             @Override
             public void onRight() {
-                System.out.println("thisworkeds");
+                System.out.println("RIGHT");
                 //you may actually swipe right
             }
 
             @Override
             public void onUp() {
+                System.out.println("UP");
+                //elide.getElideBody().
             }
 
             @Override
             public void onDown() {
+                System.out.println("DOWN");
+            }
+
+            @Override
+            public void onTap(){
+                System.out.println("TAPPED");
+            }
+
+            @Override
+            public void onPinch(){
+                System.out.println("Pinched");
             }
         });
     }
@@ -456,7 +473,6 @@ public class TerrainV2  {
         dpad.getScore().setPosition(Gdx.graphics.getPpcX()-100 ,Gdx.graphics.getHeight()-100);
         dpad.getTime().setPosition(Gdx.graphics.getPpcX()-100 ,Gdx.graphics.getHeight()-200);
 
-
         /*dpad.getUpImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-1f);
         dpad.getDownImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-2f);
         dpad.getRightImg().setPosition(game.world.stage.getCamera().position.x-.5f,game.world.stage.getCamera().position.y-1.5f);
@@ -512,10 +528,11 @@ public class TerrainV2  {
 
         if(!stop)
         tris.draw(game.stage.getCamera());
+        //System.out.println(tris.tristrip);
     }
 
     private void startRun(){
-        if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY){
+        if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
             elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
             //elide.getElideBody().applyTorque(-650,true);
             elide.getElideBody().setFixedRotation(true);

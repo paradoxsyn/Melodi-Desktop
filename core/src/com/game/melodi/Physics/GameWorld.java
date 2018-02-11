@@ -28,7 +28,7 @@ public class GameWorld {
 
     public static final Vector2 GRAVITY = new Vector2(0, -6.8f);
 
-    public final Stage stage,uistage,backgroundstage; // stage containing game actors (not GUI, but actual game elements)
+    public final Stage stage,uistage,backgroundstage,pointstage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world
     public List<Fixture> fixtures,smoothFixtures;
     public Body body,wallbody,endwallbody;
@@ -52,6 +52,7 @@ public class GameWorld {
         stage = new Stage(viewport); // create the game stage
         uistage = new Stage();
         backgroundstage = new Stage();
+        pointstage = new Stage();
         createWorld();
     }
 
@@ -106,6 +107,7 @@ public class GameWorld {
         stage.act(delta); // update game stage
         uistage.act(delta);
         backgroundstage.act(delta);
+        pointstage.act(delta);
     }
 
 
