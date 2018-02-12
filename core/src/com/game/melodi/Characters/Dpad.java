@@ -57,14 +57,15 @@ public class Dpad extends Image {
         lstyle.font = font;
         lstyle.fontColor.set(Color.WHITE);
 
+        life = new Image(game.manager.get("lifeimg.png",Texture.class));
+        life.setSize(150,150);
+        life.setPosition(Gdx.graphics.getWidth()/2-500,Gdx.graphics.getHeight()-200);
+
         score = new Label("Score: " + totalScore,lstyle);
         time = new Label("Time: " + totalTime,lstyle);
         lifeNumber = new Label(" x"+lifeNum,lstyle);
         lifeNumber.setPosition(life.getX()+100,life.getY());
 
-        life = new Image(game.manager.get("lifeimg.png",Texture.class));
-        life.setSize(20,20);
-        life.setPosition(Gdx.graphics.getWidth()/2-200,Gdx.graphics.getHeight()-Gdx.graphics.getHeight()+100);
         //score.setSize(1,1);
 
 

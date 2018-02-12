@@ -98,6 +98,8 @@ public class Loader extends ScreenAdapter {
         game.manager.load("dpadleft.png", Texture.class);
         game.manager.load("dpadright.png", Texture.class);
         game.manager.load("darkcave.png", Texture.class);
+        game.manager.load("lifeimg.png", Texture.class);
+        game.manager.load("backflipanim/flip.txt",TextureAtlas.class);
     }
 
     public void popup(){

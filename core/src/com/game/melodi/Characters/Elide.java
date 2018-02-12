@@ -3,7 +3,9 @@ package com.game.melodi.Characters;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -23,7 +25,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.Timer;
 import com.game.melodi.Animations.AnimatedImage;
+import com.game.melodi.Animations.AnimatedImage2;
 import com.game.melodi.Melodi;
 import com.game.melodi.Physics.BodyEditorLoader;
 import com.game.melodi.Physics.GameWorld;
@@ -51,12 +55,18 @@ public class Elide extends Image {
     WheelJointDef wheeljoint;
     CircleShape wheelShape;
     FixtureDef wheelFix;
+    private boolean shouldCheck;
 
     public ShapeRenderer debug;
     public SpriteBatch batch;
 
     int nextVel;
     Vector2[] prevVels;
+
+
+    private TextureAtlas elideatlas;
+    private Animation<TextureAtlas.AtlasRegion> elideanim;
+    private AnimatedImage2 elidefrontflip;
 
     public static final int MAX_VELOCITY = 10;
     public final static int NUM_PREV_VELS = 5;
@@ -68,6 +78,13 @@ public class Elide extends Image {
         Box2DSprite d;
         debug = new ShapeRenderer();
         batch = new SpriteBatch();
+
+        elideatlas = game.manager.get("backflipanim/flip.txt",TextureAtlas.class);
+        elideanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elideatlas.findRegions("flip"));
+        elidefrontflip = new AnimatedImage2(elideanim);
+        elidefrontflip.setSize(.75f,.75f);
+        elidefrontflip.setVisible(false);
+        elidefrontflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         prevVels = new Vector2[NUM_PREV_VELS];
         for(int i=0;i<prevVels.length;i++){
@@ -159,6 +176,7 @@ public class Elide extends Image {
 
         game.world.stage.addActor(elide);
         game.world.stage.addActor(board);
+        game.world.stage.addActor(elidefrontflip);
 
     }
 
@@ -183,6 +201,23 @@ public class Elide extends Image {
         return elide.getY();
     }
 
+    public AnimatedImage2 getElideFrontFlip(){
+        return elidefrontflip;
+    }
+
+    public void showFrontFlip(){
+        elidefrontflip.setVisible(true);
+        elidefrontflip.setKeyFrame(0);
+        //elidefrontflip.resume();
+    }
+
+    public void checkAnimation(){
+        if(elidefrontflip.getAnimation().isAnimationFinished(elidefrontflip.getStateTime()) && elidefrontflip.isVisible()){
+            //elidefrontflip.pause();
+            elidefrontflip.setVisible(false);
+        }
+    }
+
 
     @Override
     public void act(float delta) {
@@ -191,6 +226,7 @@ public class Elide extends Image {
 
         Vector2 pos = elideModel.getPosition().sub(0,0);
         Vector2 boardpos = boardModel.getPosition().sub(0,0);
+
 
         /*Vector2 vel = boardModel.getLinearVelocity();
         Vector2 weightedVel = vel;
@@ -214,7 +250,11 @@ public class Elide extends Image {
         board.setPosition(boardpos.x,boardpos.y);
         board.setOrigin(0,0);
         board.setRotation(boardModel.getAngle() * MathUtils.radiansToDegrees);
+
+
+        elidefrontflip.setPosition(elide.getX(),elide.getY());
         //board.setRotation(angle * MathUtils.radiansToDegrees);
+        //checkAnimation();
 
         //leftWheel.getPosition().set(boardpos.x,boardpos.y-1);
         //rightWheel.getPosition().set(board.getWidth(),boardpos.y-1);

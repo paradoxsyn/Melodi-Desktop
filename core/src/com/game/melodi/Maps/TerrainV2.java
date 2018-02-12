@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -26,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+import com.game.melodi.Animations.AnimatedImage2;
 import com.game.melodi.Animations.Background3;
 import com.game.melodi.Audiostream.AudioDevicePlayer2;
 import com.game.melodi.Characters.Dpad;
@@ -304,7 +307,6 @@ public class TerrainV2  {
             @Override
             public void onUp() {
                 System.out.println("UP");
-                //elide.getElideBody().
             }
 
             @Override
@@ -315,6 +317,7 @@ public class TerrainV2  {
             @Override
             public void onTap(){
                 System.out.println("TAPPED");
+                elide.showFrontFlip();
             }
 
             @Override
