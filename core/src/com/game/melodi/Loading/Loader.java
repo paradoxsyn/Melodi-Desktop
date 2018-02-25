@@ -100,6 +100,8 @@ public class Loader extends ScreenAdapter {
         game.manager.load("darkcave.png", Texture.class);
         game.manager.load("lifeimg.png", Texture.class);
         game.manager.load("backflipanim/flip.txt",TextureAtlas.class);
+        game.manager.load("boardfrontflipanim/boardflip.png", Texture.class);
+        game.manager.load("boardfrontflipanim/boardflip.txt",TextureAtlas.class);
     }
 
     public void popup(){

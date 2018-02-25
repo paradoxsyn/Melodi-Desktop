@@ -101,8 +101,12 @@ public class Dpad extends Image {
     }
 
     private void addScore(){
-        totalScore+=1;
+        totalScore+=.5f;
         score.setText("Score: " + totalScore);
+    }
+
+    public void addScoreFrontFlip(){
+        totalScore+=100;
     }
 
     public Label getScore(){

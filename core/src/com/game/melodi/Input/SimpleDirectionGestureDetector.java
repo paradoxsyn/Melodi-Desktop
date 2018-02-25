@@ -20,6 +20,9 @@ public class SimpleDirectionGestureDetector extends GestureDetector {
         void onTap();
 
         void onPinch();
+
+        void onTouchDown();
+
     }
 
     public SimpleDirectionGestureDetector(DirectionListener directionListener) {
@@ -62,6 +65,13 @@ public class SimpleDirectionGestureDetector extends GestureDetector {
             directionListener.onPinch();
             return super.pinch(initialPointer1,initialPointer2,pointer1,pointer2);
         }
+
+        @Override
+        public boolean touchDown (float x, float y, int pointer, int button){
+            directionListener.onTouchDown();
+            return super.touchDown(x, y, pointer, button);
+        }
+
 
     }
 }

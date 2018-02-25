@@ -22,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Scaling;
@@ -55,7 +56,8 @@ public class Elide extends Image {
     WheelJointDef wheeljoint;
     CircleShape wheelShape;
     FixtureDef wheelFix;
-    private boolean shouldCheck;
+    private boolean shouldCheck,isTouched,trick;
+    private float initialHeight,jumpHeight;
 
     public ShapeRenderer debug;
     public SpriteBatch batch;
@@ -68,6 +70,10 @@ public class Elide extends Image {
     private Animation<TextureAtlas.AtlasRegion> elideanim;
     private AnimatedImage2 elidefrontflip;
 
+    private TextureAtlas boardfrontflipatlas;
+    private Animation<TextureAtlas.AtlasRegion> boardfrontanim;
+    private AnimatedImage2 boardfrontflip;
+
     public static final int MAX_VELOCITY = 10;
     public final static int NUM_PREV_VELS = 5;
 
@@ -75,16 +81,22 @@ public class Elide extends Image {
         // char is an Image, so we load the graphics from the assetmanager
         //TODO create Asset manager
         this.game = game;
-        Box2DSprite d;
         debug = new ShapeRenderer();
         batch = new SpriteBatch();
 
         elideatlas = game.manager.get("backflipanim/flip.txt",TextureAtlas.class);
         elideanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elideatlas.findRegions("flip"));
         elidefrontflip = new AnimatedImage2(elideanim);
-        elidefrontflip.setSize(.75f,.75f);
+        elidefrontflip.setSize(.60f,.60f);
         elidefrontflip.setVisible(false);
         elidefrontflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
+        boardfrontflipatlas = game.manager.get("boardfrontflipanim/boardflip.txt",TextureAtlas.class);
+        boardfrontanim = new Animation<TextureAtlas.AtlasRegion>(.3f,boardfrontflipatlas.findRegions("boardfront"));
+        boardfrontflip = new AnimatedImage2(boardfrontanim);
+        boardfrontflip.setSize(.60f,.60f);
+        boardfrontflip.setVisible(false);
+        boardfrontflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         prevVels = new Vector2[NUM_PREV_VELS];
         for(int i=0;i<prevVels.length;i++){
@@ -94,6 +106,7 @@ public class Elide extends Image {
         wheelShape = new CircleShape();
         wheelFix = new FixtureDef();
         wheelShape.setRadius(.05f);
+        //fixpackedimages on board anim
         wheelFix.shape = wheelShape;
 
         elide = new Image(game.manager.get("elideonboard.png",Texture.class));
@@ -174,10 +187,31 @@ public class Elide extends Image {
 
         game.world.world.createJoint(jointdef);
 
+        addTouchListen();
+
         game.world.stage.addActor(elide);
         game.world.stage.addActor(board);
         game.world.stage.addActor(elidefrontflip);
+        game.world.stage.addActor(boardfrontflip);
 
+    }
+
+    private boolean addTouchListen(){
+        elide.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                //return super.touchDown(event, x, y, pointer, button);
+                isTouched=true;
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //super.touchUp(event, x, y, pointer, button);
+                isTouched=false;
+            }
+        });
+        return isTouched;
     }
 
     public Body getBoardBody(){
@@ -192,6 +226,13 @@ public class Elide extends Image {
         return elideModel;
     }
 
+    public boolean getTrick(){
+        return trick;
+    }
+
+    public boolean isShouldCheck(){
+        return shouldCheck;
+    }
 
     public float getX(){
         return elide.getX();
@@ -207,17 +248,48 @@ public class Elide extends Image {
 
     public void showFrontFlip(){
         elidefrontflip.setVisible(true);
+        elide.setVisible(false);
         elidefrontflip.setKeyFrame(0);
-        //elidefrontflip.resume();
+        trick=true;
     }
 
-    public void checkAnimation(){
+    public void showFrontBoardFlip(){
+        boardfrontflip.setVisible(true);
+        board.setVisible(false);
+        boardfrontflip.setKeyFrame(0);
+        trick=true;
+    }
+
+    private void checkAnimation(){
         if(elidefrontflip.getAnimation().isAnimationFinished(elidefrontflip.getStateTime()) && elidefrontflip.isVisible()){
-            //elidefrontflip.pause();
             elidefrontflip.setVisible(false);
+            elide.setVisible(true);
+            shouldCheck=false;
+            trick=false;
         }
     }
 
+    private void checkBoardAnimation(){
+        if(boardfrontflip.getAnimation().isAnimationFinished(boardfrontflip.getStateTime()) && boardfrontflip.isVisible()){
+            boardfrontflip.setVisible(false);
+            board.setVisible(true);
+            //shouldCheck=false;
+            trick=false;
+        }
+    }
+
+    public int getJumpHeight(){
+
+        if(isTouched){
+            initialHeight=elideModel.getPosition().y;
+        }else{
+            jumpHeight=elideModel.getPosition().y;
+        }
+
+        float distance = initialHeight + jumpHeight;
+
+        return (int)distance;
+    }
 
     @Override
     public void act(float delta) {
@@ -253,8 +325,11 @@ public class Elide extends Image {
 
 
         elidefrontflip.setPosition(elide.getX(),elide.getY());
+        boardfrontflip.setPosition(board.getX(),board.getY());
         //board.setRotation(angle * MathUtils.radiansToDegrees);
-        //checkAnimation();
+        checkAnimation();
+        checkBoardAnimation();
+        getJumpHeight();
 
         //leftWheel.getPosition().set(boardpos.x,boardpos.y-1);
         //rightWheel.getPosition().set(board.getWidth(),boardpos.y-1);

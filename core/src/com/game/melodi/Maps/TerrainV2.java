@@ -307,6 +307,12 @@ public class TerrainV2  {
             @Override
             public void onUp() {
                 System.out.println("UP");
+                if(elide.getImage().isVisible() && elide.getJumpHeight() > 1.5f){
+                    elide.showFrontFlip();
+                    elide.showFrontBoardFlip();
+                    dpad.addScoreFrontFlip();
+                }
+                System.out.println(elide.getElideBody().getPosition().y);
             }
 
             @Override
@@ -317,12 +323,16 @@ public class TerrainV2  {
             @Override
             public void onTap(){
                 System.out.println("TAPPED");
-                elide.showFrontFlip();
             }
 
             @Override
             public void onPinch(){
                 System.out.println("Pinched");
+            }
+
+            @Override
+            public void onTouchDown(){
+                System.out.println("Touchedown");
             }
         });
     }
@@ -420,11 +430,17 @@ public class TerrainV2  {
         return quad;
     }
 
-    public void checkifMoving(){
+    private void checkifMoving(){
         if(elide.getBoardBody().isAwake()){
             img.move = true;
         }else{
             img.move = false;
+        }
+    }
+
+    private void checkIfTrick(){
+        if(elide.getTrick() && elide.getBoardBody().getPosition().y <= 1){
+            //TODO RESET ELIDE AND TAKE LIFE
         }
     }
 
