@@ -440,7 +440,7 @@ public class TerrainV2  {
 
     private void checkIfTrick(){
         if(elide.getTrick() && elide.getBoardBody().getPosition().y <= 1){
-            //TODO RESET ELIDE AND TAKE LIFE
+            //TODO RESET ELIDE AND TAKE LIFEdddd
         }
     }
 
