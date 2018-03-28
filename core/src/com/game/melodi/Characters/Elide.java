@@ -74,6 +74,11 @@ public class Elide extends Image {
     private Animation<TextureAtlas.AtlasRegion> boardfrontanim;
     private AnimatedImage2 boardfrontflip;
 
+
+    private TextureAtlas elidefallatlas;
+    private Animation<TextureAtlas.AtlasRegion> elidefallanim;
+    private AnimatedImage2 elidefall;
+
     public static final int MAX_VELOCITY = 10;
     public final static int NUM_PREV_VELS = 5;
 
@@ -97,6 +102,14 @@ public class Elide extends Image {
         boardfrontflip.setSize(.60f,.60f);
         boardfrontflip.setVisible(false);
         boardfrontflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
+        elidefallatlas = game.manager.get("elidefallanim/fall.txt",TextureAtlas.class);
+        elidefallanim = new Animation<TextureAtlas.AtlasRegion>(.3f,elidefallatlas.findRegions("elidefall"));
+        elidefall = new AnimatedImage2(elidefallanim);
+        elidefall.setSize(.60f,.60f);
+        elidefall.setVisible(false);
+        elidefall.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
 
         prevVels = new Vector2[NUM_PREV_VELS];
         for(int i=0;i<prevVels.length;i++){
@@ -142,7 +155,7 @@ public class Elide extends Image {
 
         boardModel = phybod.createBody("boardmove",game.world.world,bd,.01f,.01f);
 
-        boardModel.setUserData(board);
+        boardModel.setUserData("board");
         elideModel.setUserData(elide);
 
         bd3 = new BodyDef();
@@ -218,9 +231,11 @@ public class Elide extends Image {
         return boardModel;
     }
 
-    public Image getImage(){
+    public Image getCharImage(){
         return elide;
     }
+
+    public Image getBoardImage() {return board;}
 
     public Body getElideBody(){
         return elideModel;
@@ -228,6 +243,10 @@ public class Elide extends Image {
 
     public boolean getTrick(){
         return trick;
+    }
+
+    public void setTrick(boolean trick){
+        this.trick = trick;
     }
 
     public boolean isShouldCheck(){
@@ -251,6 +270,16 @@ public class Elide extends Image {
         elide.setVisible(false);
         elidefrontflip.setKeyFrame(0);
         trick=true;
+    }
+
+    public void failTrick(){
+        elidefall.setVisible(true);
+        elidefall.setKeyFrame(0);
+
+        elide.setVisible(false);
+        elidefrontflip.setVisible(false);
+        boardfrontflip.setVisible(false);
+
     }
 
     public void showFrontBoardFlip(){
@@ -278,12 +307,22 @@ public class Elide extends Image {
         }
     }
 
+    public void charBlink(){
+        //TODO Make it an animation
+
+    }
+
     public int getJumpHeight(){
 
-        if(isTouched){
+        if(isTouched && game.world.getCollision().getConnected()){
+            initialHeight=elideModel.getPosition().y;
+            jumpHeight = 0;
+        }else if(isTouched && !game.world.getCollision().getConnected()){
+            jumpHeight=elideModel.getPosition().y;
             initialHeight=elideModel.getPosition().y;
         }else{
-            jumpHeight=elideModel.getPosition().y;
+            initialHeight=elideModel.getPosition().y;
+            jumpHeight=0;
         }
 
         float distance = initialHeight + jumpHeight;

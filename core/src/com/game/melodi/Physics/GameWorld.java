@@ -1,5 +1,6 @@
 package com.game.melodi.Physics;
 
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -26,7 +27,7 @@ public class GameWorld {
 
 
 
-    public static final Vector2 GRAVITY = new Vector2(0, -6.8f);
+    public static final Vector2 GRAVITY = new Vector2(0, -10.8f);
 
     public final Stage stage,uistage,backgroundstage,pointstage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world
@@ -36,6 +37,7 @@ public class GameWorld {
     public FixtureDef wallfixdef,endwallfixdef;
     public StretchViewport viewport;
     public PolygonShape wall;
+    private CollisionDetect collision;
 
     // here we set up the actual viewport size of the game in meters.
     public final static float UNIT_WIDTH = WIDTH/160; // 6.4 meters width
@@ -46,6 +48,7 @@ public class GameWorld {
 
     public GameWorld(){
         Box2D.init();
+        collision = new CollisionDetect();
         world = new World(GRAVITY, true);
         //viewport = new FitViewport(UNIT_WIDTH,UNIT_HEIGHT);// set the game stage viewport to the meters size
         viewport = new StretchViewport(UNIT_WIDTH,UNIT_HEIGHT);
@@ -79,11 +82,13 @@ public class GameWorld {
         wallbody = world.createBody(bd);
         wallbody.createFixture(wallfixdef);
 
-
         //ground init
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0,0);
         body = world.createBody(bd);
+        body.setUserData("ground");
+
+        world.setContactListener(collision);
 
 
     }
@@ -98,6 +103,10 @@ public class GameWorld {
         endwallfixdef.shape = wall;
         endwallbody = world.createBody(bd);
         endwallbody.createFixture(endwallfixdef);
+    }
+
+    public CollisionDetect getCollision(){
+        return collision;
     }
 
     public void update(float delta) {

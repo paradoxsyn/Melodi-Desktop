@@ -121,6 +121,8 @@ public class Dpad extends Image {
         return lifeNum;
     }
 
+    public void setLifeNum(int num){ lifeNum = num;}
+
     public int getTotalScore(){
         return totalScore;
     }
@@ -133,6 +135,7 @@ public class Dpad extends Image {
     public void act(float dt){
         super.act(dt);
         addScore();
+        lifeNumber.setText(" x"+lifeNum);
         //up.setPosition(game.world.stage.getCamera().position.x+.7f,game.world.stage.getCamera().position.y+1);
     }
 

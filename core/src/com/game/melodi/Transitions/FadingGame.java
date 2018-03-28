@@ -34,7 +34,7 @@ import com.game.melodi.Loading.PathInterface;
  * @author iXeption */
 public class FadingGame extends Game {
 
-    final protected Batch batch;
+    protected Batch batch;
     private final Array<TransitionListener> listeners;
     protected FrameBuffer currentScreenFBO;
     protected FrameBuffer nextScreenFBO;
@@ -45,8 +45,8 @@ public class FadingGame extends Game {
     private ScreenTransition screenTransition;
 
 
-    public FadingGame(Batch batch) {
-        this.batch = batch;
+    public FadingGame() {
+        //this.batch = batch;
         this.listeners = new Array<TransitionListener>();
     }
 

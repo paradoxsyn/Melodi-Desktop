@@ -379,7 +379,7 @@ public class AudioDevicePlayer2 extends AudioDevicePlayer {
 		System.out.println("ADP stop "+ name+" "+Thread.currentThread());
 		stop = true;
 		stopThread();
-		//closeStream();
+		closeStream();
 	}
 
 	public void pause() {
@@ -398,10 +398,10 @@ public class AudioDevicePlayer2 extends AudioDevicePlayer {
 	public void dispose() {
 		System.out.println("ADP dispose " + name+" "+Thread.currentThread());
 		stop();
-		/*
-		closeStream();
-		inputStreamFactory = null;
-		*/
+
+		//closeStream();
+		//inputStreamFactory = null;
+
 	
 	}
 	public String getName() {

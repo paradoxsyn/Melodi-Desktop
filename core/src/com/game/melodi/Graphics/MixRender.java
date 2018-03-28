@@ -22,6 +22,10 @@ public class MixRender {
 
         // we obtain a reference to the game stage camera. The camera is scaled to box2d meter units
         this.camera = (OrthographicCamera) world.stage.getCamera();
+        renderer.setDrawBodies(false);
+        renderer.setDrawJoints(false);
+        renderer.setDrawContacts(false);
+
 
         //camera.translate(0,1f);
 

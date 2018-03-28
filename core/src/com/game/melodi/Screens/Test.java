@@ -87,7 +87,7 @@ public class Test implements Screen {
         img = new Texture("badlogic.jpg");
         sprite = new Sprite(img);
         sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        t2 = new TerrainV2();
+        t2 = new TerrainV2(dplayer);
 
         t2.init(game);
 

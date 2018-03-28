@@ -24,6 +24,7 @@ public class MusicPlayer
     public MusicFilePlayer player;
     // The current file being played.
     private String filename;
+    private boolean musicStopped;
 
     /**
      * Constructor for objects of class MusicPlayer
@@ -75,6 +76,11 @@ public class MusicPlayer
     public void stop()
     {
         killPlayer();
+        musicStopped = true;
+    }
+
+    public boolean getMusicStopped(){
+        return musicStopped;
     }
 
     /**

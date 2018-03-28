@@ -9,6 +9,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -25,6 +26,7 @@ import com.game.melodi.Loading.ServerLoader;
 import com.game.melodi.Networking.ServerStart;
 import com.game.melodi.Physics.GameWorld;
 import com.game.melodi.Screens.Menu;
+import com.game.melodi.Transitions.FadingGame;
 
 public class Melodi extends Game {
 	public SpriteBatch batch;
@@ -84,7 +86,7 @@ public class Melodi extends Game {
 	}
 
 
-	@Override
+	//@Override
 	public void render () {
 		super.render();
 	}

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -16,15 +17,23 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
@@ -37,12 +46,17 @@ import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Input.SwipeTriStrip;
 import com.game.melodi.Melodi;
+import com.game.melodi.Physics.CollisionDetect;
 import com.game.melodi.Points.PointSystem;
+import com.game.melodi.Screens.GameOver;
+import com.game.melodi.Screens.Menu;
+import com.game.melodi.Shaders.BlurShader;
 import com.uwsoft.editor.renderer.Overlap2D;
 
 import java.util.Arrays;
 import java.util.Random;
 
+import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static com.game.melodi.Characters.Elide.MAX_VELOCITY;
 import static com.game.melodi.Melodi.player;
 import static com.game.melodi.Physics.GameWorld.UNIT_HEIGHT;
@@ -53,8 +67,10 @@ import static com.game.melodi.Physics.GameWorld.UNIT_WIDTH;
 
 public class TerrainV2  {
 
-    boolean moving = false;
+    FrameBuffer fbo;
+    TextureRegion buftxt;
     SpriteBatch batch;
+
     Background3 img;
     float[] verts,meshverts;
     ShaderProgram shaderProgram;
@@ -98,8 +114,37 @@ public class TerrainV2  {
     InputMultiplexer multi;
     boolean fling;
 
+    AudioDevicePlayer2 dplayer;
+
+    private int counter=3;
+    private boolean turnOff = false;
+
+    public TerrainV2(AudioDevicePlayer2 dplayer){
+        this.dplayer = dplayer;
+    }
+
+    /*private void renderFBO(){
+        fbo.begin();
+        batch.begin();
+        //Gdx.gl.glClearColor(0f, 0f, 0f, 0f); //transparent black
+        //Gdx.gl.glClear(GL_COLOR_BUFFER_BIT); //clear the color buffer
+        batch.setColor(Color.CYAN);
+        batch.getColor().a = 0.5f;
+        game.r.render();
+        game.world.stage.getViewport().getCamera().position.set(elide.getX()+1,elide.getY()+1.6f,0);
+        game.world.stage.getViewport().getCamera().update();
+
+        batch.flush();
+        fbo.end();
+        batch.end();
+    }*/
+
     public void init(Melodi game) {
         this.game = game;
+
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),false);
+        buftxt = new TextureRegion(fbo.getColorBufferTexture());
+
         points = new PointSystem();
         //img = new Image(game.manager.get("darkcave.png",Texture.class));
         img = new Background3(new TextureRegion(game.manager.get("darkcave.png",Texture.class)));
@@ -307,7 +352,7 @@ public class TerrainV2  {
             @Override
             public void onUp() {
                 System.out.println("UP");
-                if(elide.getImage().isVisible() && elide.getJumpHeight() > 1.5f){
+                if(elide.getCharImage().isVisible() && elide.getJumpHeight() > 1.5f){
                     elide.showFrontFlip();
                     elide.showFrontBoardFlip();
                     dpad.addScoreFrontFlip();
@@ -439,10 +484,21 @@ public class TerrainV2  {
     }
 
     private void checkIfTrick(){
-        if(elide.getTrick() && elide.getBoardBody().getPosition().y <= 1){
-            //TODO RESET ELIDE AND TAKE LIFEddd
+        if(elide.getTrick() && game.world.getCollision().getConnected()){
+            elide.getBoardBody().setLinearVelocity(0,0);
+            System.out.println("CRASH");
+            counter--;
+            elide.setTrick(false);
+            //constantly goes to 0
+            dpad.setLifeNum(counter);
+        }
+        if(counter==0){
+            //GameOver
+            gameOver();
+
         }
     }
+
 
 
     public void render () {
@@ -450,15 +506,20 @@ public class TerrainV2  {
         float dt = Gdx.graphics.getDeltaTime();
         //gdxBlends();
         multiAct(dt);
-        game.r.backrender();
-        game.r.render();
-        shaderProgram.begin();
-        shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
-        groundTexture.bind(0);
-        shaderProgram.setUniformi("u_texture", 0);
-        quad.render(shaderProgram, GL20.GL_TRIANGLES);
-        shaderProgram.end();
-        game.r.uirender();
+        if(!turnOff) {
+            game.r.backrender();
+            game.r.render();
+        }
+
+        if(!turnOff) {
+            shaderProgram.begin();
+            shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
+            groundTexture.bind(0);
+            shaderProgram.setUniformi("u_texture", 0);
+            quad.render(shaderProgram, GL20.GL_TRIANGLES);
+            shaderProgram.end();
+            game.r.uirender();
+        }
         setCamPos();
         swipeInit();
         if(swipe.isDrawing){
@@ -466,11 +527,23 @@ public class TerrainV2  {
         }
         scaleOut();
         checkifMoving(); //parallax checker
+        checkIfTrick(); //trick checker
+        checkMusic(); //check if music playing
+
+        /*if(counter<=3){
+            renderFBO();
+            batch.setProjectionMatrix(game.world.stage.getCamera().combined);
+            batch.begin();
+            batch.draw(buftxt.getTexture(),0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            batch.end();
+            batch.setProjectionMatrix(game.world.stage.getCamera().combined);
+
+        }*/
 
     }
 
     private void gdxBlends(){
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT);
         Gdx.gl20.glEnable(GL20.GL_TEXTURE_2D);
         Gdx.gl20.glEnable(GL20.GL_BLEND);
         Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -560,15 +633,37 @@ public class TerrainV2  {
 
     private void scaleOut(){
 
-        if(elide.getElideBody().getPosition().y > (game.world.stage.getCamera().viewportHeight * 3/4)){
-            ((OrthographicCamera)game.world.stage.getCamera()).zoom += 0.02f;
+        if(elide.getElideBody().getPosition().y > (game.world.stage.getCamera().viewportHeight * 3/4) && elide.getJumpHeight() >= 4){
+            ((OrthographicCamera)game.world.stage.getCamera()).zoom += 0.005f;
         }
         else if(((OrthographicCamera)game.world.stage.getCamera()).zoom > 1){
-            ((OrthographicCamera)game.world.stage.getCamera()).zoom -= 0.02f;
+            ((OrthographicCamera)game.world.stage.getCamera()).zoom -= 0.005f;
         }
     }
 
+    private void checkMusic(){
+        if(game.player.getMusicStopped()){
+            gameOver();
+        }
+    }
+
+    private void gameOver(){
+        elide.getCharImage().addAction(Actions.moveBy(0,-5,3,Interpolation.exp5));
+        elide.getBoardImage().addAction(Actions.moveBy(0,-5,3, Interpolation.exp5));
+        turnOff = true;
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                game.setScreen(new GameOver(game));
+                dplayer.dispose();
+                dispose();
+            }
+        },5,0,1);
+    }
+
     public void dispose(){
+
     }
 
 }

@@ -102,6 +102,7 @@ public class Loader extends ScreenAdapter {
         game.manager.load("backflipanim/flip.txt",TextureAtlas.class);
         game.manager.load("boardfrontflipanim/boardflip.png", Texture.class);
         game.manager.load("boardfrontflipanim/boardflip.txt",TextureAtlas.class);
+        game.manager.load("elidefallanim/fall.txt",TextureAtlas.class);
     }
 
     public void popup(){
