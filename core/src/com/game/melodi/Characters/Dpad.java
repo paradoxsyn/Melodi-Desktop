@@ -100,9 +100,14 @@ public class Dpad extends Image {
         game.world.uistage.addActor(lifeNumber);
     }
 
-    private void addScore(){
-        totalScore+=.5f;
+    public void addScore(){
+        totalScore+=1f;
         score.setText("Score: " + totalScore);
+    }
+
+    public void addTime(){
+        totalTime+=1f;
+        time.setText("Time: " + totalTime);
     }
 
     public void addScoreFrontFlip(){

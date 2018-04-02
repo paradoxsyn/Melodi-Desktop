@@ -21,6 +21,7 @@ import com.game.melodi.Graphics.MixRender;
 import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Input.SwipeTriStrip;
+import com.game.melodi.Loading.AndroidInterface;
 import com.game.melodi.Loading.PathInterface;
 import com.game.melodi.Loading.ServerLoader;
 import com.game.melodi.Networking.ServerStart;
@@ -32,7 +33,6 @@ public class Melodi extends Game {
 	public SpriteBatch batch;
 	public FitViewport viewPort;
 	public OrthographicCamera camera;
-	public Texture img;
 	public TextureRegion bg;
 	public Stage stage;
 	static public MusicController playerstream;
@@ -42,6 +42,7 @@ public class Melodi extends Game {
 	public AssetManager manager;
 	public static MusicPlayer player;
 	public PathInterface extPath;
+	public AndroidInterface musicList;
 	public InputMultiplexer multi;
 
 	//GUI Aspect
@@ -52,15 +53,15 @@ public class Melodi extends Game {
 
 	public static ServerStart server;
 
-	public Melodi(PathInterface path){
+	public Melodi(PathInterface path, AndroidInterface musicList){
 		this.extPath = path;
+		this.musicList = musicList;
 	}
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		multi = new InputMultiplexer();
-		img = new Texture("badlogic.jpg");
 		//camera = new OrthographicCamera(WIDTH,HEIGHT); //prob dont need
 		//viewPort = new FitViewport(this.WIDTH,this.HEIGHT);
 		viewPort = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -74,6 +75,8 @@ public class Melodi extends Game {
 		multi.addProcessor(stage);
 		multi.addProcessor(world.stage);
 		multi.addProcessor(world.uistage);
+
+		System.out.print(musicList.getMusicList().get(0));
 
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(multi); //** stage is responsive **//
@@ -95,6 +98,5 @@ public class Melodi extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
 	}
 }

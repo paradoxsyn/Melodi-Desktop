@@ -72,8 +72,6 @@ public class Test implements Screen {
     ImmediateModeRenderer20 r;
     TerrainV2 t2;
     SpriteBatch batch;
-    Sprite sprite;
-    Texture img;
     AudioDevicePlayer2 dplayer;
 
 
@@ -82,11 +80,6 @@ public class Test implements Screen {
         r = new ImmediateModeRenderer20(false,true,0);
         batch = new SpriteBatch();
         this.dplayer = dplayer;
-
-
-        img = new Texture("badlogic.jpg");
-        sprite = new Sprite(img);
-        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         t2 = new TerrainV2(dplayer);
 
         t2.init(game);

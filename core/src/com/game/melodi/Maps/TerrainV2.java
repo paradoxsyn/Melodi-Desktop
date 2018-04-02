@@ -80,6 +80,7 @@ public class TerrainV2  {
     int maxPhysics = 20000;
     private float[] normfeed;
     public static boolean start,stop;
+    private boolean done = false;
 
     Texture groundTexture,surfaceTexture;
 
@@ -484,8 +485,8 @@ public class TerrainV2  {
     }
 
     private void checkIfTrick(){
-        if(elide.getTrick() && game.world.getCollision().getConnected()){
-            elide.getBoardBody().setLinearVelocity(0,0);
+        if(elide.getTrick() && game.world.getCollision().getConnected()) {
+            elide.getBoardBody().setLinearVelocity(0, 0);
             System.out.println("CRASH");
             counter--;
             elide.setTrick(false);
@@ -564,6 +565,20 @@ public class TerrainV2  {
 
         dpad.getScore().setPosition(Gdx.graphics.getPpcX()-100 ,Gdx.graphics.getHeight()-100);
         dpad.getTime().setPosition(Gdx.graphics.getPpcX()-100 ,Gdx.graphics.getHeight()-200);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                dpad.addScore();
+            }
+        },0,1);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                dpad.addTime();
+            }
+        },0,2);
 
         /*dpad.getUpImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-1f);
         dpad.getDownImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-2f);
@@ -652,14 +667,17 @@ public class TerrainV2  {
         elide.getBoardImage().addAction(Actions.moveBy(0,-5,3, Interpolation.exp5));
         turnOff = true;
 
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                game.setScreen(new GameOver(game));
-                dplayer.dispose();
-                dispose();
-            }
-        },5,0,1);
+        if(!done) {
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    dplayer.dispose();
+                    dispose();
+                    game.setScreen(new GameOver(game, dpad.getTotalScore()));
+                    done=true;
+                }
+            }, 2, 0, 1);
+        }
     }
 
     public void dispose(){

@@ -31,14 +31,17 @@ public class GameOver extends ScreenAdapter {
     private Skin buttonSkin,metalskin; //** images are used as skins of the button **//
     TextButton.TextButtonStyle style;
     private TextButton button;
+    private int score;
 
-    public GameOver(final Melodi game){
+    public GameOver(final Melodi game, final int score){
         this.game = game;
+        this.score = score;
 
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/IndieFlower.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bg = new Image(new Texture(Gdx.files.internal("background.png")));
-        bg.setBounds(Gdx.graphics.getWidth()/5,Gdx.graphics.getHeight()/6,Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+        //bg.setBounds(Gdx.graphics.getWidth()/5,Gdx.graphics.getHeight()/6,Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2); middle of scrn
+        bg.setBounds(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         metalskin = new Skin(Gdx.files.internal("metal-ui.json"));
 
         buttonsAtlas = new TextureAtlas("menu.pack"); //**button atlas image **//
@@ -55,14 +58,10 @@ public class GameOver extends ScreenAdapter {
 
         style.font = font;
 
-        button = new TextButton("Ok lets try this",style);
+        button = new TextButton("Done",style);
         button.setPosition(Gdx.graphics.getWidth()/2-200,Gdx.graphics.getHeight()-800);
 
-        label = new Label("Make a folder in your internal memory on your phone named Music.\n" +
-                "There is one pre-defined song named Fur Elise that will load a sample level, otherwise all\n" +
-                " the songs should show up by the tree.\n" +
-                "You can only use MP3's for now, other file functionality will be enabled in the future\n" +
-                "You tap and hold the screen to make your character move!",lstyle);
+        label = new Label("You score:"+score,lstyle);
         label.setPosition(Gdx.graphics.getWidth()/2-600,Gdx.graphics.getHeight()-500);
 
         button.addListener(new InputListener() {
