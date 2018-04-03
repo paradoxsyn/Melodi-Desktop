@@ -571,14 +571,14 @@ public class TerrainV2  {
             public void run() {
                 dpad.addScore();
             }
-        },0,1);
+        },0,3);
 
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 dpad.addTime();
             }
-        },0,2);
+        },0,1.3f);
 
         /*dpad.getUpImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-1f);
         dpad.getDownImg().setPosition(game.world.stage.getCamera().position.x-1f,game.world.stage.getCamera().position.y-2f);
@@ -652,7 +652,7 @@ public class TerrainV2  {
             ((OrthographicCamera)game.world.stage.getCamera()).zoom += 0.005f;
         }
         else if(((OrthographicCamera)game.world.stage.getCamera()).zoom > 1){
-            ((OrthographicCamera)game.world.stage.getCamera()).zoom -= 0.005f;
+            ((OrthographicCamera)game.world.stage.getCamera()).zoom -= 0.015f;
         }
     }
 

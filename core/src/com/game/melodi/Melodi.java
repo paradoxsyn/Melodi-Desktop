@@ -76,7 +76,7 @@ public class Melodi extends Game {
 		multi.addProcessor(world.stage);
 		multi.addProcessor(world.uistage);
 
-		System.out.print(musicList.getMusicList().get(0));
+		System.out.print(musicList.getMusicList().get(25));
 
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(multi); //** stage is responsive **//
