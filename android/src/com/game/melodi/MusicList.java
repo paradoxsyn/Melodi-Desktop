@@ -72,7 +72,7 @@ public class MusicList implements AndroidInterface {
         );
 
         List<String> names = new ArrayList<String>();
-
+        /////sads
 
         while(curs.moveToNext()) {
             names.add(curs.getString(2));
