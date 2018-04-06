@@ -23,6 +23,7 @@ public class MusicList implements AndroidInterface {
     public MusicList(Context context) {
         this.context = context;
         getMusicList();
+        getNameList();
     }
 
     public List<String> getMusicList() {
@@ -50,7 +51,34 @@ public class MusicList implements AndroidInterface {
             songs.add(curs.getString(0) + "||" + curs.getString(1) + "||" + curs.getString(2) + "||" + curs.getString(3) + "||" + curs.getString(4) + "||" + curs.getString(5));
         }
 
-
         return songs;
+    }
+
+    public List<String> getNameList(){
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+
+        String[] projection = {MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DISPLAY_NAME,
+                MediaStore.Audio.Media.DURATION};
+
+        Cursor curs = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                null,
+                null
+        );
+
+        List<String> names = new ArrayList<String>();
+
+
+        while(curs.moveToNext()) {
+            names.add(curs.getString(2));
+        }
+
+        return names;
+
     }
 }

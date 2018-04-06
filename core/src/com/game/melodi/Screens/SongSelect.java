@@ -84,19 +84,18 @@ public class SongSelect extends ScreenAdapter {
     }
 
     private void setTable(){
-        /*table = new Table();
-        table.add(button);
-        table.setPosition(Gdx.graphics.getWidth()-200,Gdx.graphics.getHeight()-200);*/
+        //table = new Table();
+        //table.add(button);
+        //table.setPosition(Gdx.graphics.getWidth()-200,Gdx.graphics.getHeight()-200);
         table = slist.getSongList();
         scrollTable = slist.getScroll();
 
-        //get musiclist
 
 
         //table.setOrigin(Gdx.graphics.getWidth()-350,95);
-        //table.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-500);
+        table.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-500);
         //scrollTable.setOrigin(Gdx.graphics.getWidth()-450,95);
-        scrollTable.setPosition(Gdx.graphics.getWidth()/1.7f,Gdx.graphics.getHeight()/3);
+        scrollTable.setPosition(Gdx.graphics.getWidth()/1.85f,Gdx.graphics.getHeight()/3);
 
 
     }
@@ -151,7 +150,7 @@ public class SongSelect extends ScreenAdapter {
         titlefield.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
 
         game.stage.addActor(cave);
-        //game.stage.addActor(table);
+       // game.stage.addActor(table);
         game.stage.addActor(button);
         game.stage.addActor(scrollTable);
         //game.stage.addActor(titlefield);

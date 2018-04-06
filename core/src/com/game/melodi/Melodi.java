@@ -29,6 +29,8 @@ import com.game.melodi.Physics.GameWorld;
 import com.game.melodi.Screens.Menu;
 import com.game.melodi.Transitions.FadingGame;
 
+import java.util.List;
+
 public class Melodi extends Game {
 	public SpriteBatch batch;
 	public FitViewport viewPort;
@@ -76,11 +78,19 @@ public class Melodi extends Game {
 		multi.addProcessor(world.stage);
 		multi.addProcessor(world.uistage);
 
-		System.out.print(musicList.getMusicList().get(25));
+		//System.out.print(musicList.getMusicList().get(25));
 
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(multi); //** stage is responsive **//
 		this.setScreen(new Menu(this));
+	}
+
+	public List<String> getMusicList(){
+		return musicList.getMusicList();
+	}
+
+	public List<String> getNameList(){
+		return musicList.getNameList();
 	}
 
 

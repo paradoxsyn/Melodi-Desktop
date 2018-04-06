@@ -57,6 +57,9 @@ public class SongList {
     int i;
     boolean empty=false;
     FileHandle file;
+    List<String> musicList;
+    List<String> testList;
+    String mlist;
 
     public SongList(Melodi game){
         this.game = game;
@@ -66,6 +69,10 @@ public class SongList {
         songnames = new Array<>();
         scroll = new ScrollPane(table);
         scroll.setSmoothScrolling(true);
+        musicList = game.getNameList();
+        testList = game.getMusicList();
+
+
 
         boolean isLocAvailable = Gdx.files.isExternalStorageAvailable();
         String locRoot = Gdx.files.getExternalStoragePath();
@@ -84,8 +91,11 @@ public class SongList {
         else {
             begin = Gdx.files.internal("./bin/data");
         }
+        setSkin();
+        getSongs();
+        setTable2();
 
-        files = begin.list();
+        /*files = begin.list();
 
         try{
             begin = Gdx.files.absolute(files[0].path());
@@ -96,9 +106,9 @@ public class SongList {
 
         //files = begin.list();
 
-        setSkin();
+
         getHandles();
-        setTable();
+        setTable();*/
 
         //System.out.println(files.length);
         //System.out.println(handles);
@@ -123,6 +133,17 @@ public class SongList {
 
             }
         }
+
+    }
+
+    private void getSongs(){
+        for(String s: musicList){
+            songnames.add(s);
+        }
+
+        for(String s: testList){
+            System.out.println(s);
+        }
     }
 
     private void setTable(){
@@ -136,7 +157,7 @@ public class SongList {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                         //return super.touchDown(event, x, y, pointer, button);
-                        file = Gdx.files.external("/Music/"+songnames.get(i-1));
+                        //file = Gdx.files.external("/Music/"+songnames.get(i-1));
                         //file.copyTo(Gdx.files.local(""));
                         //file = Gdx.files.local(songnames.get(i-1));
                         return true;
@@ -145,7 +166,39 @@ public class SongList {
                     @Override
                     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                         //super.touchUp(event, x, y, pointer, button);
-                        player.startPlaying2(songnames.get(i-1));
+                        //player.startPlaying2(songnames.get(i-1));
+                        //game.setScreen(new Loader(game,file));
+                    }
+                });
+                buttons.add(button);
+            }
+        }
+        table.setSize(button.getWidth()*2,button.getHeight());
+        scroll.setSize(button.getWidth()*2,button.getHeight()*3);
+
+    }
+
+    private void setTable2(){
+
+        button = new TextButton(songname,stylebutton);
+
+        if(!empty) {
+            for (i = 0; i < musicList.size(); i++) {
+                button = new TextButton(songnames.get(i), stylebutton);
+                button.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        //return super.touchDown(event, x, y, pointer, button);
+                        file = Gdx.files.external("/Music/"+musicList.get(i-1));
+                        //file.copyTo(Gdx.files.local(""));
+                        //file = Gdx.files.local(songnames.get(i-1));
+                        return true;
+                    }
+
+                    @Override
+                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                        //super.touchUp(event, x, y, pointer, button);
+                        player.startPlaying2(musicList.get(i-1));
                         game.setScreen(new Loader(game,file));
                     }
                 });
@@ -161,6 +214,7 @@ public class SongList {
         for(int i=0;i<buttons.size;i++){
             table.add(buttons.get(i));
             table.row();
+
         }
         return table;
     }
@@ -191,7 +245,6 @@ public class SongList {
 
         stylebutton.font = font;
 
-        //button = new TextButton("Load elise", stylebutton);
 
     }
 
