@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Array;
+import com.game.melodi.Input.MultiInputListener;
 import com.game.melodi.Melodi;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.game.melodi.Melodi.player;
@@ -37,29 +39,30 @@ public class SongList {
 
     private Table table,table2;
     private Array<TextButton> buttons;
-    private Array<String> songnames;
+    private HashMap<Integer,TextButton> butons;
+    private Array<String> songnames,datanames;
     private String songname;
-    private Texture[] texIDs;
-    private Image[] imgIDs;
     private FileHandle[] files;
+    private TextField titlefield;
     private Array<FileHandle> handles;
     private FileHandle begin;
     Melodi game;
     private BitmapFont font;
     private TextureAtlas buttonsAtlas; //** image of buttons **//
     private Skin buttonSkin; //** images are used as skins of the button **//
-    private TextButton button;
-    private TextField titlefield;
+    private TextButton txtbutton;
     private TextField.TextFieldStyle style;
-    private String title;
     private TextButton.TextButtonStyle stylebutton;
     private ScrollPane scroll;
     int i;
     boolean empty=false;
     FileHandle file;
     List<String> musicList;
-    List<String> testList;
+    List<String> dataList;
     String mlist;
+    MultiInputListener multiInp;
+    boolean wasDragged = false;
+    float distance1, distance2;
 
     public SongList(Melodi game){
         this.game = game;
@@ -67,12 +70,12 @@ public class SongList {
         handles = new Array<>();
         buttons = new Array<>();
         songnames = new Array<>();
+        datanames = new Array<>();
         scroll = new ScrollPane(table);
         scroll.setSmoothScrolling(true);
         musicList = game.getNameList();
-        testList = game.getMusicList();
-
-
+        dataList = game.getDataList();
+        butons = new HashMap<Integer,TextButton>();
 
         boolean isLocAvailable = Gdx.files.isExternalStorageAvailable();
         String locRoot = Gdx.files.getExternalStoragePath();
@@ -141,23 +144,25 @@ public class SongList {
             songnames.add(s);
         }
 
-        for(String s: testList){
+        for(String s: dataList){
+            datanames.add(s);
             System.out.println(s);
         }
     }
 
     private void setTable(){
 
-        button = new TextButton(songname,stylebutton);
+        txtbutton = new TextButton(songname,stylebutton);
 
         if(!empty) {
             for (i = 0; i < songnames.size; i++) {
-                button = new TextButton(songnames.get(i), stylebutton);
-                button.addListener(new InputListener() {
+                txtbutton = new TextButton(songnames.get(i), stylebutton);
+                txtbutton.setSize(300,300);
+                txtbutton.addListener(new InputListener() {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                         //return super.touchDown(event, x, y, pointer, button);
-                        //file = Gdx.files.external("/Music/"+songnames.get(i-1));
+                        file = Gdx.files.external("/Music/"+songnames.get(i-1));
                         //file.copyTo(Gdx.files.local(""));
                         //file = Gdx.files.local(songnames.get(i-1));
                         return true;
@@ -170,49 +175,55 @@ public class SongList {
                         //game.setScreen(new Loader(game,file));
                     }
                 });
-                buttons.add(button);
+                buttons.add(txtbutton);
             }
         }
-        table.setSize(button.getWidth()*2,button.getHeight());
-        scroll.setSize(button.getWidth()*2,button.getHeight()*3);
+        table.setSize(txtbutton.getWidth(),txtbutton.getHeight());
+        scroll.setSize(txtbutton.getWidth(),txtbutton.getHeight()*3);
 
     }
 
     private void setTable2(){
 
-        button = new TextButton(songname,stylebutton);
+        //button = new TextButton(songname,stylebutton);
+        //table.setSize(txtbutton.getWidth(),txtbutton.getHeight());
+        scroll.setSize(600,900);
+        scroll.setScrollingDisabled(true,false);
 
         if(!empty) {
-            for (i = 0; i < musicList.size(); i++) {
-                button = new TextButton(songnames.get(i), stylebutton);
-                button.addListener(new InputListener() {
+            for (i = 0; i < musicList.size()-1; i++) {
+                txtbutton = new TextButton(songnames.get(i), stylebutton);
+                txtbutton.addListener(new MultiInputListener(i,txtbutton,musicList.size()) {
                     @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        //return super.touchDown(event, x, y, pointer, button);
-                        file = Gdx.files.external("/Music/"+musicList.get(i-1));
+                    public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        super.touchDown(event,x,y,pointer,button);
+                        file = Gdx.files.absolute(dataList.get(this.getKey()));
                         //file.copyTo(Gdx.files.local(""));
                         //file = Gdx.files.local(songnames.get(i-1));
-                        return true;
+                        //System.out.println(this.getKey());
+                        wasDragged = false;
                     }
 
                     @Override
                     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                         //super.touchUp(event, x, y, pointer, button);
-                        player.startPlaying2(musicList.get(i-1));
-                        game.setScreen(new Loader(game,file));
+                        if(!wasDragged){
+                            player.startPlaying2(dataList.get(this.getKey()));
+                            game.setScreen(new Loader(game,file));
+                            dispose();
+
+                        }
                     }
                 });
-                buttons.add(button);
+                buttons.add(txtbutton);
             }
         }
-        table.setSize(button.getWidth()*2,button.getHeight());
-        scroll.setSize(button.getWidth()*2,button.getHeight()*3);
 
     }
 
     public Table getSongList(){
         for(int i=0;i<buttons.size;i++){
-            table.add(buttons.get(i));
+            table.add(buttons.get(i)).fill();
             table.row();
 
         }
@@ -237,6 +248,8 @@ public class SongList {
         style.font = font;
         style.fontColor = Color.WHITE;
 
+        style.font.getData().setScale(.5f);
+
         titlefield = new TextField("Please select a title",style);
 
         stylebutton = new TextButton.TextButtonStyle(); //** Button properties **//
@@ -245,6 +258,16 @@ public class SongList {
 
         stylebutton.font = font;
 
+
+    }
+
+    public void dispose(){
+        buttons.clear();
+        buttonsAtlas.dispose();
+        buttonSkin.dispose();
+        scroll.clear();
+        table.clear();
+        txtbutton.clear();
 
     }
 

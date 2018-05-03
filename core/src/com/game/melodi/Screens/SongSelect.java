@@ -93,9 +93,9 @@ public class SongSelect extends ScreenAdapter {
 
 
         //table.setOrigin(Gdx.graphics.getWidth()-350,95);
-        table.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-500);
+        //table.setPosition(Gdx.graphics.getWidth()-350,Gdx.graphics.getHeight()-500);
         //scrollTable.setOrigin(Gdx.graphics.getWidth()-450,95);
-        scrollTable.setPosition(Gdx.graphics.getWidth()/1.85f,Gdx.graphics.getHeight()/3);
+        scrollTable.setPosition(Gdx.graphics.getWidth()/1.5f,Gdx.graphics.getHeight()/5);
 
 
     }
@@ -133,6 +133,7 @@ public class SongSelect extends ScreenAdapter {
 
                                }
 
+
                                public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                                    Gdx.app.log("my app", "Rggggggeleased");
 
@@ -140,8 +141,8 @@ public class SongSelect extends ScreenAdapter {
                                    player.startPlaying("furelise.mp3");
                                    title = player.player.getTitle();
                                    file = Gdx.files.internal(title);
-                                   dispose();
                                    game.setScreen(new Loader(game,file));
+                                   dispose();
 
 
                                }
@@ -177,8 +178,10 @@ public class SongSelect extends ScreenAdapter {
         game.stage.clear();
         buttonsAtlas.dispose();
         buttonSkin.dispose();
+        scrollTable.clear();
+        table.clear();
         caveAtlas.dispose();
-        //game.stage.dispose();
+        game.stage.dispose();
     }
 
     public void resize(int width, int height){

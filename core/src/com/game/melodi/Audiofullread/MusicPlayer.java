@@ -1,5 +1,6 @@
 package com.game.melodi.Audiofullread;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.game.melodi.Audiostream.File;
 
@@ -164,7 +165,7 @@ public class MusicPlayer
         }
         this.filename = filename;
         //player = new MusicFilePlayer(filename);
-        player = new MusicFilePlayer(File.internal(filename));
+        player = new MusicFilePlayer(File.local(filename));
     }
     catch(JavaLayerException e) {
         System.out.println("Problem setting up player");
@@ -185,8 +186,8 @@ public class MusicPlayer
                 killPlayer();
             }
             this.filename = filename;
-            //player = new MusicFilePlayer(filename);
-            player = new MusicFilePlayer(File.external("/Music/"+filename));
+            player = new MusicFilePlayer(File.absolute(filename));
+            //player = new MusicFilePlayer(File.external("/Music/"+filename));
         }
         catch(JavaLayerException e) {
             System.out.println("Problem setting up player");

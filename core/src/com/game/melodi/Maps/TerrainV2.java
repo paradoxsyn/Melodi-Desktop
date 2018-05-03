@@ -176,8 +176,8 @@ public class TerrainV2  {
         vshade = Gdx.files.internal("shaders/defaultvertex.glsl").readString();
         fshade = Gdx.files.internal("shaders/defaultfrag.glsl").readString();
 
-        System.out.println("world stage height + width" + game.world.stage.getHeight() + " " + game.world.stage.getWidth());
-        System.out.println("stage height + width" + game.stage.getHeight() + " " + game.stage.getWidth());
+        //System.out.println("world stage height + width" + game.world.stage.getHeight() + " " + game.world.stage.getWidth());
+        //System.out.println("stage height + width" + game.stage.getHeight() + " " + game.stage.getWidth());
 
         feed = player.player.getInfo();
         shaderProgram = new ShaderProgram(vshade,fshade);
@@ -186,6 +186,7 @@ public class TerrainV2  {
             normfeed[i]=(float)feed[i];
         }
         for(int i=0;i<normfeed.length-1;i++){
+            //this is for the white noise from MP3's, maybe different if not MP3
             normfeed[i] -= Math.min(feed[80], feed[feed.length - 1]);
         }
         for(int i=0;i<normfeed.length;i++){
@@ -208,7 +209,8 @@ public class TerrainV2  {
             verts[id++] = 1f;
 
             verts[id++] = (x+=70)/80;
-            verts[id++] = normfeed[i+1];
+            //verts[id++] = (x+=35)/80; // spreads out the hillys
+            verts[id++] = normfeed[i+1]; //adds more hillys
             //verts[id++] =  feed[i];
             verts[id++] = 0;
             verts[id++] = 0f;
@@ -235,13 +237,15 @@ public class TerrainV2  {
         //quad.setIndices(indices);*/
         dPadInit();
 
-
         updatePhysics(0,normfeed.length);
         //smoothLines(0,normfeed.length);
         generateMESH(normfeed.length-1);
-        System.out.println("Vertices "+ Arrays.toString(verts));
-        System.out.println("chain info " + Arrays.toString(xyPoints));
+        //System.out.println("Vertices "+ Arrays.toString(verts));
+        //System.out.println("chain info " + Arrays.toString(xyPoints));
 
+        //elide.getCharImage().setPosition(getStartingPointA().x+5,getStartingPointA().y+5);
+        //elide.getElideBody().setTransform(getStartingPointB().x,getStartingPointB().y,0);
+        elide.getElideBody().setTransform(elide.getBoardBody().getPosition().x+3,elide.getBoardBody().getPosition().y+5,0);
     }
 
     private void trackSync(){
@@ -265,18 +269,30 @@ public class TerrainV2  {
             pt2.set(verts[i+5],verts[i+6]);
 
             hSegments = (int)Math.floor(pt2.x-pt1.x)/totalSegs;
-            //dx = (pt2.x - pt1.x) / hSegments;
+            dx = (pt2.x - pt1.x) / hSegments;
             da = MathUtils.PI / totalSegs;
             ymid = (pt1.y + pt2.y) / 2;
             ampl = (pt1.y - pt2.y) / 2;
 
-            //pt2.x = pt1.x + i*dx;
-            //pt2.y = ymid + ampl * MathUtils.cos();
+            pt2.x = pt1.x + (i)*dx;
+            pt2.y = ymid + ampl * MathUtils.cos(da*(i));
 
             shape.set(pt1,pt2);
             game.world.smoothFixtures.add(game.world.body.createFixture(shape,5));
         }
 
+    }
+
+    public Vector2 getStartingPointA(){
+        return p1.set(verts[0],verts[1]);
+    }
+
+    public Vector2 getStartingPointB(){
+        return pt1.set(verts[0],verts[1]);
+    }
+
+    public float[] getNormfeed(){
+        return normfeed;
     }
 
     private void updatePhysics(int startIndex, int endIndex){
@@ -323,7 +339,7 @@ public class TerrainV2  {
             //index += 20;
 
         }
-        System.out.println("LEN OF XY AND NORM " + xyPoints.length + "and " + normfeed.length);
+        //System.out.println("LEN OF XY AND NORM " + xyPoints.length + "and " + normfeed.length);
 
         return xyPoints;
     }
@@ -348,6 +364,8 @@ public class TerrainV2  {
             public void onRight() {
                 System.out.println("RIGHT");
                 //you may actually swipe right
+                //elide.getBoardBody().applyAngularImpulse(1.3f,true);
+                elide.getElideBody().setTransform(elide.getX()+1,elide.getY()+1,0);
             }
 
             @Override
@@ -423,7 +441,8 @@ public class TerrainV2  {
             //tempVer[offset+6] = x;      tempVer[offset+7] = y;  // height
 
             tempVer[offset+4] = (x+=70)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down
-            tempVer[offset+6] = x;     tempVer[offset+7] = normfeed[i+1];  // height
+            //tempVer[offset+4] = (x+=35)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down //test diff lengths of stage
+            tempVer[offset+6] = x;               tempVer[offset+7] = normfeed[i+1];  // height
 
             //tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height original
             //tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = y-0.02f; // below height
@@ -508,7 +527,7 @@ public class TerrainV2  {
         //gdxBlends();
         multiAct(dt);
         if(!turnOff) {
-            game.r.backrender();
+            //game.r.backrender();
             game.r.render();
         }
 
@@ -517,7 +536,7 @@ public class TerrainV2  {
             shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
             groundTexture.bind(0);
             shaderProgram.setUniformi("u_texture", 0);
-            quad.render(shaderProgram, GL20.GL_TRIANGLES);
+            //quad.render(shaderProgram, GL20.GL_TRIANGLES);
             shaderProgram.end();
             game.r.uirender();
         }
@@ -654,6 +673,7 @@ public class TerrainV2  {
         else if(((OrthographicCamera)game.world.stage.getCamera()).zoom > 1){
             ((OrthographicCamera)game.world.stage.getCamera()).zoom -= 0.015f;
         }
+        //((OrthographicCamera)game.world.stage.getCamera()).zoom += 0.001f;
     }
 
     private void checkMusic(){

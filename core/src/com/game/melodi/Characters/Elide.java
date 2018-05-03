@@ -118,6 +118,7 @@ public class Elide extends Image {
 
         wheelShape = new CircleShape();
         wheelFix = new FixtureDef();
+
         wheelShape.setRadius(.05f);
         //fixpackedimages on board anim
         wheelFix.shape = wheelShape;
@@ -127,6 +128,7 @@ public class Elide extends Image {
 
         elide.setSize(.75f,.75f);
         //elide.debug();
+
         debug.setAutoShapeType(true);
         board.setSize(.90f,.90f);
 
@@ -142,7 +144,10 @@ public class Elide extends Image {
 
         phybod = new PhysicsShapeCache("physics/boardphy.xml");
         elideModel = phybod.createBody("elideonboard",game.world.world,bd,.0055f,.0055f);
-        //elideModel.setTransform(1,1,0);
+        //elideModel.setTransform(0,1,0);
+        for(int i=0;i<elideModel.getFixtureList().size;i++){
+           elideModel.getFixtureList().get(i).getFilterData().groupIndex = 1;
+        }
 
         //TODO Make board body
         bd2 = new BodyDef();
@@ -185,6 +190,22 @@ public class Elide extends Image {
         //revdef.bodyB = rightWheel;
         //revdef.localAnchorA.set(.7f,.4f);
         //game.world.world.createJoint(revdef);
+
+        //axle shape
+
+        /*game.world.axleShape.setAsBox(1,1);
+        game.world.axleFixture.density = 0.5f;
+        game.world.axleFixture.friction = 3;
+        game.world. axleFixture.restitution = 0.3f;
+        game.world. axleFixture.filter.groupIndex = 1;
+
+        game.world.axleDef.position.set(elideModel.getWorldCenter().x-.5f,elideModel.getWorldCenter().y);
+        game.world.rearAxel = game.world.world.createBody(game.world.axleDef);
+        //game.world.rearAxel.createFixture(game.world.axleFixture);
+
+        game.world. axleDef.position.set(getElideBody().getWorldCenter().x+.5f,(getElideBody().getWorldCenter().y));
+        game.world.frontAxel = game.world.world.createBody(game.world.axleDef);
+        //game.world.frontAxel.createFixture(game.world.axleFixture);*/ //none of this is working correctly
 
 
 

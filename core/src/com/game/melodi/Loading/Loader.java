@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -139,7 +140,7 @@ public class Loader extends ScreenAdapter {
 
         // Or if you only need a static bar, you can do
         // loadingBar = new Image(atlas.findRegion("loading-bar1"));
-
+        stage.getRoot().setTouchable(Touchable.disabled);
         // Add all the actors to the stage
         stage.addActor(screenBg);
         stage.addActor(loadingBar);
@@ -247,11 +248,13 @@ public class Loader extends ScreenAdapter {
     public void hide() {
         // Dispose the loading assets as we no longer need them
         game.manager.unload("loading.pack");
+        dispose();
     }
 
     public void dispose(){
 
         game.stage.clear();
+
         game.stage.dispose();
 
     }

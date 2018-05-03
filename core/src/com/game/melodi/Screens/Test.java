@@ -29,6 +29,7 @@ import com.game.melodi.Audiostream.MP3InputStreamFactory;
 import com.game.melodi.Characters.Elide;
 import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
+import com.game.melodi.Maps.Grind;
 import com.game.melodi.Maps.LevelMap;
 import com.game.melodi.Maps.Terrain;
 import com.game.melodi.Maps.TerrainV2;
@@ -73,6 +74,7 @@ public class Test implements Screen {
     TerrainV2 t2;
     SpriteBatch batch;
     AudioDevicePlayer2 dplayer;
+    Grind g;
 
 
     public Test(final Melodi game, AudioDevicePlayer2 dplayer){
@@ -83,6 +85,8 @@ public class Test implements Screen {
         t2 = new TerrainV2(dplayer);
 
         t2.init(game);
+        g = new Grind(game);
+        g.init();
 
 
     }

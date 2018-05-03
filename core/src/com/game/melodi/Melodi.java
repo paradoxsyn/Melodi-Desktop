@@ -93,6 +93,10 @@ public class Melodi extends Game {
 		return musicList.getNameList();
 	}
 
+	public List<String> getDataList(){
+		return musicList.getDataList();
+	}
+
 
 	public InputMultiplexer getMulti(){
 		return multi;

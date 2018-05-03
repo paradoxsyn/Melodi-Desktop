@@ -31,13 +31,18 @@ public class GameWorld {
 
     public final Stage stage,uistage,backgroundstage,pointstage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world
-    public List<Fixture> fixtures,smoothFixtures;
-    public Body body,wallbody,endwallbody;
+    public List<Fixture> fixtures,smoothFixtures,grindFixtures;
+    public Body body,wallbody,endwallbody,grindBody;
     public BodyDef bd;
     public FixtureDef wallfixdef,endwallfixdef;
     public StretchViewport viewport;
     public PolygonShape wall;
     private CollisionDetect collision;
+
+    public PolygonShape axleShape;
+    public FixtureDef axleFixture;
+    public BodyDef axleDef;
+    public Body rearAxel, frontAxel;
 
     // here we set up the actual viewport size of the game in meters.
     public final static float UNIT_WIDTH = WIDTH/160; // 6.4 meters width
@@ -63,11 +68,18 @@ public class GameWorld {
 
 
         fixtures = new ArrayList<>();
+        grindFixtures = new ArrayList<>();
         smoothFixtures = new ArrayList<>();
         bd = new BodyDef();
         wall = new PolygonShape();
         wallfixdef = new FixtureDef();
         endwallfixdef = new FixtureDef();
+
+        //axle
+        axleShape = new PolygonShape();
+        axleFixture = new FixtureDef();
+        axleDef = new BodyDef();
+        axleDef.type = BodyDef.BodyType.DynamicBody;
 
         //WALL
         bd.type = BodyDef.BodyType.StaticBody;
@@ -86,6 +98,7 @@ public class GameWorld {
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0,0);
         body = world.createBody(bd);
+        grindBody = world.createBody(bd);
         body.setUserData("ground");
 
         world.setContactListener(collision);

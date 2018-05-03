@@ -118,6 +118,8 @@ public class File {
 		return new File(Gdx.files.local(name));
 	}
 
+	public static File absolute(String name){ return new File(Gdx.files.absolute(name));}
+
 	public boolean isDirectory() {
 		return fh.isDirectory();
 	}

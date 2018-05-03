@@ -9,4 +9,5 @@ import java.util.List;
 public interface AndroidInterface {
     List<String> getMusicList();
     List<String> getNameList();
+    List<String> getDataList();
 }
