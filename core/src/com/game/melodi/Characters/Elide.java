@@ -137,7 +137,7 @@ public class Elide extends Image {
         bd = new BodyDef();
         bd.type = BodyDef.BodyType.DynamicBody;
         //needs to be dynamic
-        bd.position.set(world.body.getPosition().x+7,world.body.getPosition().y+3);
+        bd.position.set(world.body.getPosition().x,world.body.getPosition().y+3);
         bd.allowSleep  = true;
         bd.angularDamping = 2000;
         bd.linearDamping = 0.5f;

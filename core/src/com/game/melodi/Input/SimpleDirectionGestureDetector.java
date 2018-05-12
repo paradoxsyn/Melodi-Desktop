@@ -56,7 +56,9 @@ public class SimpleDirectionGestureDetector extends GestureDetector {
 
         @Override
         public boolean tap (float x, float y, int count, int button){
-            directionListener.onTap();
+            if(count==2) {
+                directionListener.onTap();
+            }
             return super.tap(x,y,count,button);
         }
 

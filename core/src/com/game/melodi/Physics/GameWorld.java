@@ -31,7 +31,7 @@ public class GameWorld {
 
     public final Stage stage,uistage,backgroundstage,pointstage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world
-    public List<Fixture> fixtures,smoothFixtures,grindFixtures;
+    public List<Fixture> fixtures,smoothFixtures,grindFixtures,frontRampFixture,backRampFixture;
     public Body body,wallbody,endwallbody,grindBody;
     public BodyDef bd;
     public FixtureDef wallfixdef,endwallfixdef;
@@ -70,6 +70,8 @@ public class GameWorld {
         fixtures = new ArrayList<>();
         grindFixtures = new ArrayList<>();
         smoothFixtures = new ArrayList<>();
+        frontRampFixture = new ArrayList<>();
+        backRampFixture = new ArrayList<>();
         bd = new BodyDef();
         wall = new PolygonShape();
         wallfixdef = new FixtureDef();
@@ -92,7 +94,7 @@ public class GameWorld {
         wallfixdef.friction = 1;
 
         wallbody = world.createBody(bd);
-        wallbody.createFixture(wallfixdef);
+        //wallbody.createFixture(wallfixdef);
 
         //ground init
         bd.type = BodyDef.BodyType.StaticBody;

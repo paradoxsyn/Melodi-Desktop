@@ -85,8 +85,9 @@ public class Test implements Screen {
         t2 = new TerrainV2(dplayer);
 
         t2.init(game);
-        g = new Grind(game);
-        g.init();
+        g = new Grind(game,30,50);
+        //g.init();
+        g.addFrontRamp(1,1);
 
 
     }

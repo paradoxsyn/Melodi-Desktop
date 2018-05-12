@@ -81,6 +81,7 @@ public class TerrainV2  {
     private float[] normfeed;
     public static boolean start,stop;
     private boolean done = false;
+    private boolean dblTap = false;
 
     Texture groundTexture,surfaceTexture;
 
@@ -237,8 +238,8 @@ public class TerrainV2  {
         //quad.setIndices(indices);*/
         dPadInit();
 
-        updatePhysics(0,normfeed.length);
-        //smoothLines(0,normfeed.length);
+        //updatePhysics(0,normfeed.length);
+        smoothLines(0,normfeed.length);
         generateMESH(normfeed.length-1);
         //System.out.println("Vertices "+ Arrays.toString(verts));
         //System.out.println("chain info " + Arrays.toString(xyPoints));
@@ -259,27 +260,33 @@ public class TerrainV2  {
 
     private void smoothLines(int startIndex, int endIndex){
         EdgeShape shape;
-        totalSegs = game.world.fixtures.size();
+        totalSegs = 40;
         shape = new EdgeShape();
         pt1 = new Vector2();
         pt2 = new Vector2();
 
-        for(int i=startIndex;i < endIndex;i+=5){
-            pt1.set(verts[i],verts[i+1]);
-            pt2.set(verts[i+5],verts[i+6]);
+        for(int j=startIndex;j<endIndex;j+=5){
+            hSegments = (int)Math.floor(pt2.x-pt1.x)/(10);
+            //dx = (p2.x - p1.x) / hSegments;
+            da = MathUtils.PI / hSegments;
 
-            hSegments = (int)Math.floor(pt2.x-pt1.x)/totalSegs;
-            dx = (pt2.x - pt1.x) / hSegments;
+            pt1.set(verts[j], verts[j + 1]);
+            pt2.set(verts[j + 5], verts[j + 6]);
+
+            dx = (pt2.x - pt1.x) / totalSegs;
             da = MathUtils.PI / totalSegs;
             ymid = (pt1.y + pt2.y) / 2;
             ampl = (pt1.y - pt2.y) / 2;
 
-            pt2.x = pt1.x + (i)*dx;
-            pt2.y = ymid + ampl * MathUtils.cos(da*(i));
-
-            shape.set(pt1,pt2);
-            game.world.smoothFixtures.add(game.world.body.createFixture(shape,5));
+            //for(int j=0;j< hSegments+1; ++j) {
+            //pt2.x = pt1.x + (j) * (dx);
+            pt2.y = ymid + ampl * MathUtils.cos(da * (j));
+            shape.set(pt1, pt2);
+            game.world.smoothFixtures.add(game.world.body.createFixture(shape, 5));
+            //}
         }
+
+
 
     }
 
@@ -386,6 +393,12 @@ public class TerrainV2  {
 
             @Override
             public void onTap(){
+                if(!dblTap) {
+                    dblTap = true;
+                    //TODO flip elides img
+                }else{
+                    dblTap = false;
+                }
                 System.out.println("TAPPED");
             }
 
@@ -399,7 +412,7 @@ public class TerrainV2  {
                 System.out.println("Touchedown");
             }
         });
-    }
+}
 
     public Mesh generateMESH(int res){
         Random r = new Random();
@@ -542,8 +555,11 @@ public class TerrainV2  {
         }
         setCamPos();
         swipeInit();
-        if(swipe.isDrawing){
-            startRun();
+        if(swipe.isDrawing && !dblTap){
+            startRunForward();
+        }
+        if(swipe.isDrawing && dblTap){
+            startRunBackward();
         }
         scaleOut();
         checkifMoving(); //parallax checker
@@ -657,9 +673,17 @@ public class TerrainV2  {
         //System.out.println(tris.tristrip);
     }
 
-    private void startRun(){
+    private void startRunForward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
             elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            //elide.getElideBody().applyTorque(-650,true);
+            elide.getElideBody().setFixedRotation(true);
+        }
+    }
+
+    private void startRunBackward(){
+        if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
+            elide.getBoardBody().applyLinearImpulse(-.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
             //elide.getElideBody().applyTorque(-650,true);
             elide.getElideBody().setFixedRotation(true);
         }
