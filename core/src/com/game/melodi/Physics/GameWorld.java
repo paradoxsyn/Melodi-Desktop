@@ -28,6 +28,7 @@ public class GameWorld {
 
 
     public static final Vector2 GRAVITY = new Vector2(0, -10.8f);
+    //-10.8f
 
     public final Stage stage,uistage,backgroundstage,pointstage; // stage containing game actors (not GUI, but actual game elements)
     public World world; // box2d world

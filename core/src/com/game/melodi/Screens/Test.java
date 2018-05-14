@@ -88,6 +88,7 @@ public class Test implements Screen {
         g = new Grind(game,30,50);
         //g.init();
         g.addFrontRamp(1,1);
+        g.addBackRamp(t2.getP2().x,t2.getP2().y);
 
 
     }

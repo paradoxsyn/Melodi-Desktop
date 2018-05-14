@@ -40,17 +40,24 @@ public class Grind {
     }
 
     public void addFrontRamp(int startX, int startY){
-        p1.set(-1,5);
-        p2.set(0,-1);
+        p1.set(-2,5);
+        p2.set(0,0);
         shape.set(p1,p2);
         game.world.grindFixtures.add(game.world.wallbody.createFixture(shape,5));
-        p1.set(-1,7);
-        p2.set(-1,6);
+        p1.set(-2,8);
+        p2.set(-2,5);
         shape.set(p1,p2);
         game.world.grindFixtures.add(game.world.wallbody.createFixture(shape,5));
     }
 
-    public void addBackRamp(){
-        game.world.frontRampFixture.add(game.world.wallbody.createFixture(shape,5));
+    public void addBackRamp(float startX, float startY){
+        p1.set(startX+2,5);
+        p2.set(startX,startY);
+        shape.set(p1,p2);
+        game.world.grindFixtures.add(game.world.endwallbody.createFixture(shape,5));
+        p1.set(startX+2,startY+8);
+        p2.set(startX+2,startY+5);
+        shape.set(p1,p2);
+        game.world.grindFixtures.add(game.world.endwallbody.createFixture(shape,5));
     }
 }

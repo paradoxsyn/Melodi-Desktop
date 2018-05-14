@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 public class CollisionDetect implements ContactListener {
 
-    private boolean isConnected;
+    private boolean isConnected,isTrackEnd;
 
     @Override
     public void beginContact(Contact contact) {

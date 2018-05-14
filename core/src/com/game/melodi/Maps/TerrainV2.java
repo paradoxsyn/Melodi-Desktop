@@ -53,6 +53,7 @@ import com.game.melodi.Screens.Menu;
 import com.game.melodi.Shaders.BlurShader;
 import com.uwsoft.editor.renderer.Overlap2D;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -70,6 +71,9 @@ public class TerrainV2  {
     FrameBuffer fbo;
     TextureRegion buftxt;
     SpriteBatch batch;
+    double musicFreqScore;
+    int leveler = 70;
+    int balancer = 1;
 
     Background3 img;
     float[] verts,meshverts;
@@ -144,6 +148,8 @@ public class TerrainV2  {
     public void init(Melodi game) {
         this.game = game;
 
+        DecimalFormat df = new DecimalFormat("#.##");
+
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),false);
         buftxt = new TextureRegion(fbo.getColorBufferTexture());
 
@@ -194,6 +200,20 @@ public class TerrainV2  {
             normfeed[i] /= Math.max(feed[80], feed[feed.length - 1] - Math.min(feed[80], feed[feed.length - 1]));
         }
         System.out.println("NORMALIZED FEED" + Arrays.toString(normfeed));
+
+
+        for(int i=0;i<normfeed.length;i++){
+            musicFreqScore+=normfeed[i];
+        }
+        musicFreqScore=musicFreqScore/normfeed.length;
+        if(musicFreqScore >= 100){
+            balancer = 70;
+        }else if(musicFreqScore <= 2.5){
+            leveler = 20;
+        }
+
+        System.out.println("TOTAL MUSIC FREQUENCY SCORE " + df.format(musicFreqScore));
+
         game.world.stage.getCamera().position.x+=6f;
 
         trackSync();
@@ -201,17 +221,19 @@ public class TerrainV2  {
         meshverts = new float[feed.length*20];
         indices = new short[feed.length*6];
 
+
+        //TODO IF HIGH FREQ SONG, REDUCE THE HEIGHT, IF LOW, DONT.
         for(i=0;i<normfeed.length-1;i++){
             verts[id++] = x/80;
-            verts[id++] = normfeed[i];
+            verts[id++] = normfeed[i]/balancer;
             //verts[id++] = normfeed[i] - MathUtils.sin(i) * 60  * i / 50;
             verts[id++] = 0;
             verts[id++] = 0f;
             verts[id++] = 1f;
 
-            verts[id++] = (x+=70)/80;
+            verts[id++] = (x+=leveler)/80;
             //verts[id++] = (x+=35)/80; // spreads out the hillys
-            verts[id++] = normfeed[i+1]; //adds more hillys
+            verts[id++] = normfeed[i+1]/balancer; //adds more hillys
             //verts[id++] =  feed[i];
             verts[id++] = 0;
             verts[id++] = 0f;
@@ -238,8 +260,8 @@ public class TerrainV2  {
         //quad.setIndices(indices);*/
         dPadInit();
 
-        //updatePhysics(0,normfeed.length);
-        smoothLines(0,normfeed.length);
+        updatePhysics(0,normfeed.length);
+        //smoothLines(0,normfeed.length);
         generateMESH(normfeed.length-1);
         //System.out.println("Vertices "+ Arrays.toString(verts));
         //System.out.println("chain info " + Arrays.toString(xyPoints));
@@ -265,13 +287,17 @@ public class TerrainV2  {
         pt1 = new Vector2();
         pt2 = new Vector2();
 
+        int winHeight = Gdx.graphics.getHeight();
+        int winWidth = Gdx.graphics.getWidth();
+
         for(int j=startIndex;j<endIndex;j+=5){
             hSegments = (int)Math.floor(pt2.x-pt1.x)/(10);
             //dx = (p2.x - p1.x) / hSegments;
+
             da = MathUtils.PI / hSegments;
 
-            pt1.set(verts[j], verts[j + 1]);
-            pt2.set(verts[j + 5], verts[j + 6]);
+            pt1.set((verts[j]), (verts[j + 1]));
+            pt2.set((verts[j + 5]), (verts[j + 6]));
 
             dx = (pt2.x - pt1.x) / totalSegs;
             da = MathUtils.PI / totalSegs;
@@ -280,7 +306,7 @@ public class TerrainV2  {
 
             //for(int j=0;j< hSegments+1; ++j) {
             //pt2.x = pt1.x + (j) * (dx);
-            pt2.y = ymid + ampl * MathUtils.cos(da * (j));
+            //pt2.y = ymid + ampl * MathUtils.cos(da * (j));
             shape.set(pt1, pt2);
             game.world.smoothFixtures.add(game.world.body.createFixture(shape, 5));
             //}
@@ -322,6 +348,10 @@ public class TerrainV2  {
             game.world.fixtures.add(game.world.body.createFixture(shape,5));
         }
             game.world.endWall(p2.x,p2.y);
+    }
+
+    public Vector2 getP2(){
+        return p2;
     }
 
     private Vector2[] generateXY() {
@@ -394,7 +424,7 @@ public class TerrainV2  {
             @Override
             public void onTap(){
                 if(!dblTap) {
-                    dblTap = true;
+                    //dblTap = true;
                     //TODO flip elides img
                 }else{
                     dblTap = false;
@@ -447,15 +477,15 @@ public class TerrainV2  {
             //tempVer[offset+0] = x;      tempVer[offset+1] = 0; // below height
             //tempVer[offset+2] = x;      tempVer[offset+3] = 0; // below height
 
-            tempVer[offset+0] = (x/80);      tempVer[offset+1] = normfeed[i]; // below height
+            tempVer[offset+0] = (x/80);      tempVer[offset+1] = normfeed[i]/balancer; // below height
             tempVer[offset+2] = x;      tempVer[offset+3] = 1; // below height // I think UV was 0
 
             //tempVer[offset+4] = x;      tempVer[offset+5] = y;  // height
             //tempVer[offset+6] = x;      tempVer[offset+7] = y;  // height
 
-            tempVer[offset+4] = (x+=70)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down
+            tempVer[offset+4] = (x+=leveler)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down
             //tempVer[offset+4] = (x+=35)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down //test diff lengths of stage
-            tempVer[offset+6] = x;               tempVer[offset+7] = normfeed[i+1];  // height
+            tempVer[offset+6] = x;               tempVer[offset+7] = normfeed[i+1]/balancer;  // height
 
             //tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height original
             //tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = y-0.02f; // below height
@@ -675,7 +705,8 @@ public class TerrainV2  {
 
     private void startRunForward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
-            elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            elide.getBoardBody().applyLinearImpulse(.90f,.25f,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            //elide.getBoardBody().applyAngularImpulse(1.2f,true);
             //elide.getElideBody().applyTorque(-650,true);
             elide.getElideBody().setFixedRotation(true);
         }
@@ -683,9 +714,10 @@ public class TerrainV2  {
 
     private void startRunBackward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
-            elide.getBoardBody().applyLinearImpulse(-.90f,0,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            elide.getBoardBody().applyLinearImpulse(-.90f,1,elide.getElideBody().getPosition().x,elide.getElideBody().getPosition().y,true);
+            elide.getBoardBody().applyAngularImpulse(1.2f,true);
             //elide.getElideBody().applyTorque(-650,true);
-            elide.getElideBody().setFixedRotation(true);
+            //elide.getElideBody().setFixedRotation(true);
         }
     }
 
