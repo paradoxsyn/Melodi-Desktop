@@ -95,6 +95,7 @@ public class GameWorld {
         wallfixdef.friction = 1;
 
         wallbody = world.createBody(bd);
+        wallbody.setUserData("frontgrind");
         //wallbody.createFixture(wallfixdef);
 
         //ground init
@@ -118,6 +119,7 @@ public class GameWorld {
         bd.position.set(x,y);
         endwallfixdef.shape = wall;
         endwallbody = world.createBody(bd);
+        endwallbody.setUserData("lastgrind");
         endwallbody.createFixture(endwallfixdef);
     }
 

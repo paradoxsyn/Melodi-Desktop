@@ -1,0 +1,61 @@
+flip.png
+size: 386, 247
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+flip
+  rotate: false
+  xy: 87, 1
+  size: 123, 130
+  orig: 140, 140
+  offset: 0, 6
+  index: 0
+flip
+  rotate: false
+  xy: 1, 1
+  size: 84, 131
+  orig: 140, 140
+  offset: 23, 3
+  index: 1
+flip
+  rotate: false
+  xy: 212, 1
+  size: 90, 124
+  orig: 140, 140
+  offset: 26, 11
+  index: 2
+flip
+  rotate: false
+  xy: 278, 127
+  size: 93, 119
+  orig: 140, 140
+  offset: 26, 11
+  index: 3
+flip
+  rotate: true
+  xy: 1, 134
+  size: 101, 95
+  orig: 140, 140
+  offset: 13, 23
+  index: 4
+flip
+  rotate: false
+  xy: 194, 133
+  size: 82, 96
+  orig: 140, 140
+  offset: 40, 23
+  index: 5
+flip
+  rotate: true
+  xy: 98, 133
+  size: 96, 94
+  orig: 140, 140
+  offset: 22, 24
+  index: 6
+flip
+  rotate: false
+  xy: 304, 1
+  size: 81, 92
+  orig: 140, 140
+  offset: 24, 27
+  index: 7

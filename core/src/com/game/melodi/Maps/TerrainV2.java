@@ -585,10 +585,10 @@ public class TerrainV2  {
         }
         setCamPos();
         swipeInit();
-        if(swipe.isDrawing && !dblTap){
+        if(swipe.isDrawing && !game.world.getCollision().getTrackEnd()){
             startRunForward();
         }
-        if(swipe.isDrawing && dblTap){
+        if(swipe.isDrawing && game.world.getCollision().getTrackEnd()){
             startRunBackward();
         }
         scaleOut();

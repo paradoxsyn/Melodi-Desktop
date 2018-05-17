@@ -1,0 +1,33 @@
+boardflip.png
+size: 78, 89
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+boardfront
+  rotate: false
+  xy: 1, 80
+  size: 76, 8
+  orig: 90, 90
+  offset: 5, 44
+  index: -1
+boardfront
+  rotate: false
+  xy: 1, 30
+  size: 74, 25
+  orig: 90, 90
+  offset: 6, 37
+  index: 2
+boardfront
+  rotate: false
+  xy: 1, 1
+  size: 74, 27
+  orig: 90, 90
+  offset: 6, 35
+  index: 3
+boardfront
+  rotate: false
+  xy: 1, 57
+  size: 75, 21
+  orig: 90, 90
+  offset: 6, 39
+  index: 4

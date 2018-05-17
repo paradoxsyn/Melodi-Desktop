@@ -24,10 +24,21 @@ public class CollisionDetect implements ContactListener {
             isConnected = false;
         }
 
+        if(contact.getFixtureB().getBody().getUserData() == "board" && contact.getFixtureA().getBody().getUserData() == "lastgrind"){
+            isTrackEnd = true;
+        }
+
+        if(contact.getFixtureB().getBody().getUserData() == "board" && contact.getFixtureA().getBody().getUserData() == "frontgrind"){
+            isTrackEnd = false;
+        }
     }
 
     public boolean getConnected(){
         return isConnected;
+    }
+
+    public boolean getTrackEnd(){
+        return isTrackEnd;
     }
 
     @Override
