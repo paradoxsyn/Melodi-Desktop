@@ -48,7 +48,6 @@ public class GameWorld {
     // here we set up the actual viewport size of the game in meters.
     public final static float UNIT_WIDTH = WIDTH/160; // 6.4 meters width
     public final static float UNIT_HEIGHT = HEIGHT/160; // 3.75 meters height
-    public int test;
 
     //public final static float UNIT_WIDTH = WIDTH/ // 6.4 meters width
     //public final static float UNIT_HEIGHT = HEIGHT // 3.75 meters height
