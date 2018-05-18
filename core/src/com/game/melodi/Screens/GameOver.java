@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -32,11 +33,12 @@ public class GameOver extends ScreenAdapter {
     TextButton.TextButtonStyle style;
     private TextButton button;
     private int score;
+    Stage stage;
 
     public GameOver(final Melodi game, final int score){
         this.game = game;
         this.score = score;
-
+        stage = new Stage();
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/IndieFlower.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bg = new Image(new Texture(Gdx.files.internal("background.png")));
@@ -81,7 +83,7 @@ public class GameOver extends ScreenAdapter {
             }
         });
 
-        game.stage.addActor(bg);
+        stage.addActor(bg);
         game.stage.addActor(label);
         game.stage.addActor(button);
 
@@ -89,7 +91,6 @@ public class GameOver extends ScreenAdapter {
 
     public void update(float dt) {
         elapsedTime += Gdx.graphics.getDeltaTime();
-        game.stage.act(dt);
 
     }
 
@@ -103,12 +104,14 @@ public class GameOver extends ScreenAdapter {
     @Override
     public void render(float delta){
         elapsedTime += Gdx.graphics.getDeltaTime();
-        //GL20 gl = Gdx.gl;
-        //gl.glClearColor(1, 0, 0, 1);
-        //gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        game.stage.act();
+        GL20 gl = Gdx.gl;
+        gl.glClearColor(1, 0, 0, 1);
+        gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //game.stage.act();
         //game.viewPort.apply();
-        game.stage.draw();
+        //game.stage.draw();
+        stage.act();
+        stage.draw();
         //t2.render();
     }
 
