@@ -1,6 +1,7 @@
 package com.game.melodi.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
@@ -124,11 +125,11 @@ public class SongSelect extends ScreenAdapter {
 
         stylebutton.font = font;
 
-        button = new TextButton("Load elise", stylebutton);
+        /*button = new TextButton("Load elise", stylebutton);
 
         button.addListener(new InputListener() {
                                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                                   Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
+                                   Gdx.app.log("my app", "Pressed");
                                    return true;
 
                                }
@@ -146,23 +147,32 @@ public class SongSelect extends ScreenAdapter {
 
 
                                }
-                           });
+                           });*/
+
 
         titlefield.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
 
         game.stage.addActor(cave);
        // game.stage.addActor(table);
-        game.stage.addActor(button);
+        //game.stage.addActor(button);
         game.stage.addActor(scrollTable);
         //game.stage.addActor(titlefield);
         game.stage.addActor(furry);
 
     }
 
+    public void backButton(){
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            // Do something
+            game.setScreen(new Menu(game));
+        }
+    }
+
     public void render(float dt){
         GL20 gl = Gdx.gl;
         gl.glClearColor(0, 1, 0, 1);
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        backButton();
 
 
         titlefield.setText(title);

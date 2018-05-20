@@ -309,7 +309,7 @@ public class Menu extends ScreenAdapter {
 
 	@Override
 	public void resize(int width, int height) {
-		game.viewPort.update(width, height, true);
+		game.viewPort.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 		game.stage.getCamera().update();
 	}
 

@@ -1,6 +1,7 @@
 package com.game.melodi.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -88,6 +89,13 @@ public class About extends ScreenAdapter {
 
     }
 
+    public void backButton(){
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            // Do something
+            game.setScreen(new Menu(game));
+        }
+    }
+
     public void update(float dt) {
         elapsedTime += Gdx.graphics.getDeltaTime();
         game.stage.act(dt);
@@ -111,6 +119,7 @@ public class About extends ScreenAdapter {
         //game.viewPort.apply();
         game.stage.draw();
         //t2.render();
+        backButton();
     }
 
     @Override

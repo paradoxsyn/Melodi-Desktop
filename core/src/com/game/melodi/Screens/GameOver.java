@@ -84,8 +84,8 @@ public class GameOver extends ScreenAdapter {
         });
 
         stage.addActor(bg);
-        game.stage.addActor(label);
-        game.stage.addActor(button);
+        stage.addActor(label);
+        stage.addActor(button);
 
     }
 

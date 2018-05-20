@@ -101,7 +101,7 @@ public class Dpad extends Image {
     }
 
     public void addScore(){
-        totalScore+=1f;
+        //totalScore+=1f;
         score.setText("Score: " + totalScore);
     }
 

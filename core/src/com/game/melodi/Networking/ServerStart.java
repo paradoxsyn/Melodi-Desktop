@@ -39,6 +39,7 @@ public class ServerStart {
     private MongoClientURI uri;
     public MongoClient client;
     public MongoDatabase mongodb;
+    public MongoCollection<Document> collection;
     public DB db;
     private FindIterable<Document> iterable;
     Preferences prefs = Gdx.app.getPreferences("Login");
@@ -49,18 +50,22 @@ public class ServerStart {
 
     public ServerStart() {
 
-        //If you want to start up a server
-        if(checkConnection()){
+        try{
             uri = new MongoClientURI("mongodb://paradoxsyn:shadow101@melodi-shard-00-00-qrcji.mongodb.net:27017,melodi-shard-00-01-qrcji.mongodb.net:27017,melodi-shard-00-02-qrcji.mongodb.net:27017/test?ssl=true&replicaSet=Melodi-shard-0&authSource=admin");
             client = new MongoClient(uri);
+        }catch(Exception e){
+            System.out.println("Couldn't connect");
+        }
+        //If you want to start up a server
+        if(checkConnection()){
             mongoConnect();
-            //loadUserCollection();
         }
     }
 
     public boolean checkConnection(){
         try{
             client.getAddress();
+            //System.out.println(client.listDatabases());
 
         }catch (Exception e){
             System.out.println("Down");
@@ -108,6 +113,7 @@ public class ServerStart {
 
         id = prefs.getString("ID");
         DBCollection coll = db.getCollection("username");
+
         BasicDBObject query = new BasicDBObject("username",id);
         DBCursor cursor = coll.find(query);
 

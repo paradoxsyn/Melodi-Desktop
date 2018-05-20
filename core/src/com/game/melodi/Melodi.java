@@ -53,7 +53,7 @@ public class Melodi extends Game {
 
 	InputProcessor backProcessor;
 
-	public static ServerStart server;
+	public ServerStart server;
 
 	public Melodi(PathInterface path, AndroidInterface musicList){
 		this.extPath = path;
@@ -102,10 +102,22 @@ public class Melodi extends Game {
 		return multi;
 	}
 
+	public ServerStart getServer(){
+		return server;
+	}
+
+	public void backButton(){
+		if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+			// Do something
+			Gdx.app.exit();
+		}
+	}
+
 
 	//@Override
 	public void render () {
 		super.render();
+		backButton();
 	}
 
 	

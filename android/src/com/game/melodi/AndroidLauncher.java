@@ -15,6 +15,7 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		//config.useWakelock = true;
 		initialize(new Melodi(new ExtPath(),new MusicList(this)), config);
 		//initialize(new TerrainV2(), config);
 	}
