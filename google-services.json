@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "188948769264",
+    "firebase_url": "https://melodi-9b2b0.firebaseio.com",
+    "project_id": "melodi-9b2b0",
+    "storage_bucket": "melodi-9b2b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188948769264:android:8ec4a6f9f8dd1e28",
+        "android_client_info": {
+          "package_name": "com.game.melodi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "188948769264-frs9en0f3csvvu469b56on3rohueab19.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "188948769264-frs9en0f3csvvu469b56on3rohueab19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZqElP78MXFjazk2xN1tQyu3lRRkDI6TE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

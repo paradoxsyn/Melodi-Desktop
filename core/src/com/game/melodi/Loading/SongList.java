@@ -148,6 +148,14 @@ public class SongList {
             datanames.add(s);
             System.out.println(s);
         }
+
+        if(songnames.size <= 0){
+            empty = true;
+        }
+    }
+
+    public boolean isEmpty(){
+        return empty;
     }
 
     private void setTable(){
@@ -217,6 +225,8 @@ public class SongList {
                 });
                 buttons.add(txtbutton);
             }
+        }else{
+            System.out.println("Add a song!");
         }
 
     }

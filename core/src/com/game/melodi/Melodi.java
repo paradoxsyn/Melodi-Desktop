@@ -21,6 +21,7 @@ import com.game.melodi.Graphics.MixRender;
 import com.game.melodi.Input.SimpleDirectionGestureDetector;
 import com.game.melodi.Input.SwipeHandler;
 import com.game.melodi.Input.SwipeTriStrip;
+import com.game.melodi.Loading.AdActivityHandler;
 import com.game.melodi.Loading.AndroidInterface;
 import com.game.melodi.Loading.PathInterface;
 import com.game.melodi.Loading.ServerLoader;
@@ -36,7 +37,7 @@ public class Melodi extends Game {
 	public FitViewport viewPort;
 	public OrthographicCamera camera;
 	public TextureRegion bg;
-	public Stage stage;
+	public Stage stage, gameOverStage;
 	static public MusicController playerstream;
 	public ShapeRenderer test;
 	public GameWorld world; // contains the game world's bodies and actors.
@@ -45,6 +46,7 @@ public class Melodi extends Game {
 	public static MusicPlayer player;
 	public PathInterface extPath;
 	public AndroidInterface musicList;
+	public AdActivityHandler aHand;
 	public InputMultiplexer multi;
 
 	//GUI Aspect
@@ -55,9 +57,10 @@ public class Melodi extends Game {
 
 	public ServerStart server;
 
-	public Melodi(PathInterface path, AndroidInterface musicList){
+	public Melodi(PathInterface path, AndroidInterface musicList, AdActivityHandler aHand){
 		this.extPath = path;
 		this.musicList = musicList;
+		this.aHand = aHand;
 	}
 
 	@Override
@@ -68,6 +71,7 @@ public class Melodi extends Game {
 		//viewPort = new FitViewport(this.WIDTH,this.HEIGHT);
 		viewPort = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		stage = new Stage(viewPort);
+		gameOverStage = new Stage();
 		test = new ShapeRenderer();
 		world = new GameWorld();
 		r = new MixRender(world);
@@ -77,6 +81,7 @@ public class Melodi extends Game {
 		multi.addProcessor(stage);
 		multi.addProcessor(world.stage);
 		multi.addProcessor(world.uistage);
+		multi.addProcessor(gameOverStage);
 
 		//System.out.print(musicList.getMusicList().get(25));
 

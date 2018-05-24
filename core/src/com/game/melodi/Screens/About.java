@@ -45,7 +45,7 @@ public class About extends ScreenAdapter {
         buttonsAtlas = new TextureAtlas("menu.pack"); //**button atlas image **//
         buttonSkin = new Skin();
         buttonSkin.addRegions(buttonsAtlas); //** skins for on and off **//
-        fontParameter.size = 40;
+        fontParameter.size = 54;
         font = fontGenerator.generateFont(fontParameter);
         lstyle = metalskin.get(Label.LabelStyle.class);
         lstyle.font = font;
@@ -59,12 +59,12 @@ public class About extends ScreenAdapter {
         button = new TextButton("Ok lets try this",style);
         button.setPosition(Gdx.graphics.getWidth()/2-200,Gdx.graphics.getHeight()-800);
 
-        label = new Label("Make a folder in your internal memory on your phone named Music.\n" +
-                "There is one pre-defined song named Fur Elise that will load a sample level, otherwise all\n" +
-                " the songs should show up by the tree.\n" +
-                "You can only use MP3's for now, other file functionality will be enabled in the future\n" +
-                "You tap and hold the screen to make your character move!",lstyle);
-        label.setPosition(Gdx.graphics.getWidth()/2-600,Gdx.graphics.getHeight()-500);
+        label = new Label("This requires basic knowledge of how to add files to an (for now) Android phone.\n" +
+                "1.Make a folder on your phone named Music (If it's not already there).\n" +
+                "2.Add MP3 formatted songs to the folder that aren't terribly long.\n" +
+                "3.The app should then detect the MP3s and load the song level.\n" +
+                "4.  ;)",lstyle);
+        label.setPosition(Gdx.graphics.getWidth()/2-800,Gdx.graphics.getHeight()-500);
 
         button.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

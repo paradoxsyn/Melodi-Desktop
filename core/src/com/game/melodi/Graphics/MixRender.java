@@ -44,7 +44,7 @@ public class MixRender {
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // box2d debug renderering (optional)
-        renderer.render(world.world, camera.combined);
+        //renderer.render(world.world, camera.combined);
         // game stage rendering
         world.stage.draw();
 

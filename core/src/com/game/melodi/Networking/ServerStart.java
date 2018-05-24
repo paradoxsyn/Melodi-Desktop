@@ -17,8 +17,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -140,10 +138,10 @@ public class ServerStart {
         }
     }
 
-    public void configSocket(){
+    public void configSocket() {
         //Socket IO
 
-        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener(){
+        /*socket.on(Socket.EVENT_CONNECT, new Emitter.Listener(){
             @Override
             public void call(Object... args){
                 Gdx.app.log("SocketIO", "Connected");
@@ -171,6 +169,7 @@ public class ServerStart {
                 }
             }
         });
+    */
     }
 
 }

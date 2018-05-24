@@ -33,18 +33,19 @@ public class GameOver extends ScreenAdapter {
     TextButton.TextButtonStyle style;
     private TextButton button;
     private int score;
-    Stage stage;
+
 
     public GameOver(final Melodi game, final int score){
         this.game = game;
         this.score = score;
-        stage = new Stage();
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/IndieFlower.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bg = new Image(new Texture(Gdx.files.internal("background.png")));
         //bg.setBounds(Gdx.graphics.getWidth()/5,Gdx.graphics.getHeight()/6,Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2); middle of scrn
         bg.setBounds(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         metalskin = new Skin(Gdx.files.internal("metal-ui.json"));
+
+        game.aHand.showAds(true);
 
         buttonsAtlas = new TextureAtlas("menu.pack"); //**button atlas image **//
         buttonSkin = new Skin();
@@ -83,9 +84,9 @@ public class GameOver extends ScreenAdapter {
             }
         });
 
-        stage.addActor(bg);
-        stage.addActor(label);
-        stage.addActor(button);
+        game.gameOverStage.addActor(bg);
+        game.gameOverStage.addActor(label);
+        game.gameOverStage.addActor(button);
 
     }
 
@@ -110,8 +111,8 @@ public class GameOver extends ScreenAdapter {
         //game.stage.act();
         //game.viewPort.apply();
         //game.stage.draw();
-        stage.act();
-        stage.draw();
+        game.gameOverStage.act();
+        game.gameOverStage.draw();
         //t2.render();
     }
 
@@ -119,7 +120,7 @@ public class GameOver extends ScreenAdapter {
     public void dispose(){
         buttonSkin.dispose();
         metalskin.dispose();
-        game.stage.clear();
+        game.gameOverStage.clear();
 
     }
 }

@@ -162,6 +162,8 @@ public class Menu extends ScreenAdapter {
 		existingUser = prefs.getBoolean("existing");
 		System.out.println(existingUser);
 
+		game.aHand.showAds(false);
+
 		if(!existingUser){
 			//prefs.putString("ID","null");
 			//prefs.putBoolean("existing",false);

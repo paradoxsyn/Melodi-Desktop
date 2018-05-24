@@ -445,7 +445,7 @@ white
   index: -1
 window
   rotate: false
-  xy: 87, 183
+  xy: 87, 229
   size: 39, 44
   split: 9, 9, 26, 4
   pad: 6, 6, 28, 6

@@ -128,5 +128,8 @@ idea {
     }
 }
 dependencies {
-    compile "com.codeandweb.physicseditor:gdx-pe-loader:1.1.0"
+    compile 'com.codeandweb.physicseditor:gdx-pe-loader:1.1.0'
+    compile 'com.google.android.gms:play-services-ads:11.0.4'
+    compile 'com.google.firebase:firebase-ads:10.0.1'
 }
+apply plugin: 'com.google.gms.google-services'

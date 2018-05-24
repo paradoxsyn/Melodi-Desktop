@@ -103,10 +103,9 @@ public class NewUser extends ScreenAdapter {
         tstyle = metalskin.get(TextField.TextFieldStyle.class);
         tstyle.font = font;
 
+        wstyle = metalskin.get(Window.WindowStyle.class);
         lstyle = metalskin.get(Label.LabelStyle.class);
         lstyle.font = font;
-
-        wstyle = metalskin.get(Window.WindowStyle.class);
 
         name = new TextField("",metalskin);
         password = new TextField("",metalskin);
@@ -241,7 +240,7 @@ public class NewUser extends ScreenAdapter {
     }
 
     public boolean complete(){
-         dialog = new Dialog("Confirm", metalskin, "dialog")
+         dialog = new Dialog("Confirm", metalskin, "default")
          {
             public void result(Object obj) {
                 System.out.println("result "+obj);
@@ -266,10 +265,12 @@ public class NewUser extends ScreenAdapter {
             }
         };
         dialog.text("Submit this info?");
-        dialog.setSize(600,600);
-        dialog.setSize(600,600);
-        dialog.button("Yes", true); //sends "true" as the result
-        dialog.button("No", false);  //sends "false" as the result
+        dialog.getBackground().setMinWidth(350);
+        dialog.getBackground().setMinHeight(350);
+        dialog.setMovable(false);
+        dialog.button("Yes", true,style); //sends "true" as the result
+        dialog.button("No", false,style);  //sends "false" as the result
+        //dialog.getButtonTable().debugCell().setSize(400,490);
         dialog.show(game.stage);
 
         return next;

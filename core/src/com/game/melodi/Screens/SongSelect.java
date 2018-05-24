@@ -17,12 +17,15 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 import com.game.melodi.Animations.AnimatedImage2;
@@ -58,6 +61,9 @@ public class SongSelect extends ScreenAdapter {
     private Animation<TextureAtlas.AtlasRegion> caveanim;
     private AnimatedImage2 cave;
     FileHandle file;
+    private Skin metalskin;
+    private Label.LabelStyle lstyle;
+    private Window.WindowStyle wstyle;
 
     private int width, height;
 
@@ -76,6 +82,20 @@ public class SongSelect extends ScreenAdapter {
 
     private void loadSongUI(){
         furry = new Image(new Texture("elideback.png"));
+        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/IndieFlower.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParameter.size = 54;
+        font = fontGenerator.generateFont(fontParameter);
+
+        metalskin = new Skin(Gdx.files.internal("metal-ui.json"));
+        lstyle = metalskin.get(Label.LabelStyle.class);
+        lstyle.font = font;
+
+        fontParameter.size = 24;
+        font = fontGenerator.generateFont(fontParameter);
+        wstyle = metalskin.get(Window.WindowStyle.class);
+        wstyle.titleFont = font;
+
         caveAtlas = new TextureAtlas("caveanim/cave.txt");
         caveanim = new Animation<TextureAtlas.AtlasRegion>(0.20f,caveAtlas.findRegions("cave"));
         cave = new AnimatedImage2(caveanim);
@@ -159,6 +179,10 @@ public class SongSelect extends ScreenAdapter {
         //game.stage.addActor(titlefield);
         game.stage.addActor(furry);
 
+        if(slist.isEmpty()){
+            addSomeSongs();
+        }
+
     }
 
     public void backButton(){
@@ -166,6 +190,17 @@ public class SongSelect extends ScreenAdapter {
             // Do something
             game.setScreen(new Menu(game));
         }
+    }
+
+    private void addSomeSongs(){
+        Dialog dialog;
+        dialog = new Dialog("No songs found", metalskin, "dialog");
+        dialog.text(new Label("Add some songs!", lstyle));
+        dialog.getBackground().setMinWidth(350);
+        dialog.setStyle(wstyle);
+        dialog.getBackground().setMinHeight(200);
+        dialog.setMovable(false);
+        dialog.show(game.stage);
     }
 
     public void render(float dt){
@@ -191,7 +226,7 @@ public class SongSelect extends ScreenAdapter {
         scrollTable.clear();
         table.clear();
         caveAtlas.dispose();
-        game.stage.dispose();
+        //game.stage.dispose();
     }
 
     public void resize(int width, int height){

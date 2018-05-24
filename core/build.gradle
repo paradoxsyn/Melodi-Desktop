@@ -6,5 +6,6 @@ eclipse.project {
     name = appName + "-core"
 }
 dependencies {
-    compile "com.codeandweb.physicseditor:gdx-pe-loader:1.1.0"
+    compile 'com.codeandweb.physicseditor:gdx-pe-loader:1.1.0'
 }
+//apply plugin: 'com.google.gms.google-services'
