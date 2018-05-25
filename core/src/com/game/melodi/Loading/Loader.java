@@ -255,7 +255,7 @@ public class Loader extends ScreenAdapter {
 
         game.stage.clear();
 
-        game.stage.dispose();
+        //game.stage.dispose();
 
     }
 

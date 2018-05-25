@@ -149,6 +149,7 @@ public class TerrainV2  {
     public void init(Melodi game) {
         this.game = game;
 
+        Gdx.input.setCatchBackKey(true);
         DecimalFormat df = new DecimalFormat("#.##");
 
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),false);
@@ -210,7 +211,10 @@ public class TerrainV2  {
         if(musicFreqScore >= 100){
             balancer = 70;
         }else if(musicFreqScore <= 2.5){
-            leveler = 20;
+            //leveler = 20;
+            leveler = 30;
+
+            //TODO Still causes issues with some songs making it too bumpy
         }
 
         System.out.println("TOTAL MUSIC FREQUENCY SCORE " + df.format(musicFreqScore));
@@ -223,7 +227,7 @@ public class TerrainV2  {
         indices = new short[feed.length*6];
 
 
-        //TODO IF HIGH FREQ SONG, REDUCE THE HEIGHT, IF LOW, DONT.
+        //IF HIGH FREQ SONG, REDUCE THE HEIGHT, IF LOW, DONT(Subject to change, see).
         for(i=0;i<normfeed.length-1;i++){
             verts[id++] = x/80;
             verts[id++] = normfeed[i]/balancer;
@@ -567,6 +571,7 @@ public class TerrainV2  {
             elide.getBoardBody().setLinearVelocity(0, 0);
             System.out.println("CRASH");
             counter--;
+            elide.failTrick();
             elide.setTrick(false);
             //constantly goes to 0
             dpad.setLifeNum(counter);
@@ -574,7 +579,6 @@ public class TerrainV2  {
         if(counter==0){
             //GameOver
             gameOver();
-
         }
     }
 
@@ -769,14 +773,17 @@ public class TerrainV2  {
         turnOff = true;
 
         if(!done) {
-            Timer.schedule(new Timer.Task() {
+            dispose();
+            game.setScreen(new GameOver(game, dpad.getTotalScore()));
+            done=true;
+            /*Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                     dispose();
                     game.setScreen(new GameOver(game, dpad.getTotalScore()));
                     done=true;
                 }
-            },2,0,0);
+            },1,0,0);*/
         }
     }
 
@@ -796,11 +803,12 @@ public class TerrainV2  {
         game.world.pointstage.clear();
         game.world.backgroundstage.clear();
         game.world.uistage.clear();
+        dplayer.dispose();
 
-        game.world.stage.dispose();
-        game.world.pointstage.dispose();
-        game.world.backgroundstage.dispose();
-        game.world.uistage.dispose();
+        //game.world.stage.dispose();
+        //game.world.pointstage.dispose();
+        //game.world.backgroundstage.dispose();
+        //game.world.uistage.dispose();
 
 
 

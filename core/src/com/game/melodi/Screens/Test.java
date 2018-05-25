@@ -186,7 +186,7 @@ public class Test implements Screen {
 
     @Override
     public void dispose(){
-        dplayer.dispose();
+        //dplayer.dispose();
     }
 
     @Override

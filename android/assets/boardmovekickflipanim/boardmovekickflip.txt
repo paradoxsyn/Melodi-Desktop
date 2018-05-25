@@ -1,0 +1,40 @@
+boardmovekickflip.png
+size: 78, 104
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+boardmovekickflip
+  rotate: false
+  xy: 1, 95
+  size: 76, 8
+  orig: 90, 90
+  offset: 5, 44
+  index: 0
+boardmovekickflip
+  rotate: false
+  xy: 1, 54
+  size: 76, 19
+  orig: 90, 90
+  offset: 5, 43
+  index: 1
+boardmovekickflip
+  rotate: false
+  xy: 1, 30
+  size: 76, 22
+  orig: 90, 90
+  offset: 5, 42
+  index: 2
+boardmovekickflip
+  rotate: false
+  xy: 1, 1
+  size: 76, 27
+  orig: 90, 90
+  offset: 5, 38
+  index: 3
+boardmovekickflip
+  rotate: false
+  xy: 1, 75
+  size: 75, 18
+  orig: 90, 90
+  offset: 5, 39
+  index: 4

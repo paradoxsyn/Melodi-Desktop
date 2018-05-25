@@ -1,0 +1,54 @@
+elidecorkscrew.png
+size: 663, 126
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+elidecorkscrew
+  rotate: true
+  xy: 1, 1
+  size: 124, 130
+  orig: 140, 140
+  offset: 1, 6
+  index: 0
+elidecorkscrew
+  rotate: true
+  xy: 247, 1
+  size: 106, 132
+  orig: 140, 140
+  offset: 17, 5
+  index: 1
+elidecorkscrew
+  rotate: true
+  xy: 133, 1
+  size: 119, 112
+  orig: 140, 140
+  offset: 8, 18
+  index: 2
+elidecorkscrew
+  rotate: false
+  xy: 381, 1
+  size: 130, 68
+  orig: 140, 140
+  offset: 4, 18
+  index: 3
+elidecorkscrew
+  rotate: false
+  xy: 513, 1
+  size: 140, 42
+  orig: 140, 140
+  offset: 0, 34
+  index: 4
+elidecorkscrew
+  rotate: false
+  xy: 522, 45
+  size: 140, 42
+  orig: 140, 140
+  offset: 0, 35
+  index: 5
+elidecorkscrew
+  rotate: false
+  xy: 381, 71
+  size: 139, 49
+  orig: 140, 140
+  offset: 1, 27
+  index: 6

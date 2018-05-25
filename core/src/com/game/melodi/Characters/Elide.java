@@ -227,22 +227,29 @@ public class Elide extends Image {
         game.world.stage.addActor(board);
         game.world.stage.addActor(elidefrontflip);
         game.world.stage.addActor(boardfrontflip);
+        game.world.stage.addActor(elidefall);
 
     }
 
     private boolean addTouchListen(){
-        elide.addListener(new InputListener() {
+        elide.addListener(new ActorGestureListener() {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //return super.touchDown(event, x, y, pointer, button);
                 isTouched=true;
-                return true;
+                //return true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 //super.touchUp(event, x, y, pointer, button);
                 isTouched=false;
+            }
+
+            @Override
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                //super.tap(event, x, y, count, button);
+                isTouched=true;
             }
         });
         return isTouched;
@@ -294,12 +301,22 @@ public class Elide extends Image {
     }
 
     public void failTrick(){
+
         elidefall.setVisible(true);
         elidefall.setKeyFrame(0);
 
         elide.setVisible(false);
         elidefrontflip.setVisible(false);
         boardfrontflip.setVisible(false);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                elide.setVisible(true);
+                board.setVisible(true);
+                elidefall.setVisible(false);
+            }
+        },0.9f,0,0);
 
     }
 
@@ -326,11 +343,6 @@ public class Elide extends Image {
             //shouldCheck=false;
             trick=false;
         }
-    }
-
-    public void charBlink(){
-        //TODO Make it an animation
-
     }
 
     public int getJumpHeight(){
@@ -386,6 +398,7 @@ public class Elide extends Image {
 
         elidefrontflip.setPosition(elide.getX(),elide.getY());
         boardfrontflip.setPosition(board.getX(),board.getY());
+        elidefall.setPosition(board.getX(),board.getY());
         //board.setRotation(angle * MathUtils.radiansToDegrees);
         checkAnimation();
         checkBoardAnimation();

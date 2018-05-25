@@ -1,0 +1,26 @@
+elideboardmovement.png
+size: 125, 403
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+elideboardmovement
+  rotate: false
+  xy: 1, 1
+  size: 123, 130
+  orig: 140, 140
+  offset: 3, 8
+  index: 0
+elideboardmovement
+  rotate: false
+  xy: 1, 265
+  size: 114, 137
+  orig: 140, 140
+  offset: 2, 0
+  index: 1
+elideboardmovement
+  rotate: false
+  xy: 1, 133
+  size: 116, 130
+  orig: 140, 140
+  offset: 0, 8
+  index: 2

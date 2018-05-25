@@ -38,6 +38,7 @@ public class GameOver extends ScreenAdapter {
     public GameOver(final Melodi game, final int score){
         this.game = game;
         this.score = score;
+        Gdx.input.setCatchBackKey(false);
         FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/IndieFlower.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bg = new Image(new Texture(Gdx.files.internal("background.png")));
