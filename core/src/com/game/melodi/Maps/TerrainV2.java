@@ -443,11 +443,15 @@ public class TerrainV2  {
 
             @Override
             public void onTap(){
-                if(!dblTap) {
+                /*if(!dblTap) {
                     //dblTap = true;
-                    //TODO flip elides img
                 }else{
                     dblTap = false;
+                }*/
+                if(elide.getCharImage().isVisible() && elide.getJumpHeight() > 1.5f){
+                    elide.showElideBoardMovement();
+                    elide.showBoardShuffle();
+                    dpad.addScoreShuffle();
                 }
                 System.out.println("TAPPED");
             }

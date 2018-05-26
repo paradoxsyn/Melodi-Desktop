@@ -104,6 +104,16 @@ public class Loader extends ScreenAdapter {
         game.manager.load("boardfrontflipanim/boardflip.png", Texture.class);
         game.manager.load("boardfrontflipanim/boardflip.txt",TextureAtlas.class);
         game.manager.load("elidefallanim/fall.txt",TextureAtlas.class);
+        game.manager.load("boardmovekickflipanim/boardmovekickflip.txt",TextureAtlas.class);
+        game.manager.load("boardmovekickflipanim/boardmovekickflip.png",TextureAtlas.class);
+        game.manager.load("boardmoveshuffleanim/boardmoveshuffle.txt",TextureAtlas.class);
+        game.manager.load("boardmoveshuffleanim/boardmoveshuffle.png",TextureAtlas.class);
+        game.manager.load("elideboardmovementanim/elideboardmovement.txt",TextureAtlas.class);
+        game.manager.load("elideboardmovementanim/elideboardmovement.png",TextureAtlas.class);
+        game.manager.load("elidecorkscrewanim/elidecorkscrew.txt",TextureAtlas.class);
+        game.manager.load("elidecorkscrewanim/elidecorkscrew.png",TextureAtlas.class);
+
+
     }
 
     public void popup(){

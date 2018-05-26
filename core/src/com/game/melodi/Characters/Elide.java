@@ -74,6 +74,21 @@ public class Elide extends Image {
     private Animation<TextureAtlas.AtlasRegion> boardfrontanim;
     private AnimatedImage2 boardfrontflip;
 
+    private TextureAtlas elideboardmovementatlas;
+    private Animation<TextureAtlas.AtlasRegion> elideboardmovementanim;
+    private AnimatedImage2 elideboardmovement;
+
+    private TextureAtlas boardmovekickflipatlas;
+    private Animation<TextureAtlas.AtlasRegion> boardmovekickflipanim;
+    private AnimatedImage2 boardmovekickflip;
+
+    private TextureAtlas elidecorkscrewatlas;
+    private Animation<TextureAtlas.AtlasRegion> elidecorkscrewanim;
+    private AnimatedImage2 elidecorkscrew;
+
+    private TextureAtlas boardmoveshuffleatlas;
+    private Animation<TextureAtlas.AtlasRegion> boardmoveshuffleanim;
+    private AnimatedImage2 boardmoveshuffle;
 
     private TextureAtlas elidefallatlas;
     private Animation<TextureAtlas.AtlasRegion> elidefallanim;
@@ -109,6 +124,34 @@ public class Elide extends Image {
         elidefall.setSize(.60f,.60f);
         elidefall.setVisible(false);
         elidefall.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
+        elideboardmovementatlas = game.manager.get("elideboardmovementanim/elideboardmovement.txt",TextureAtlas.class);
+        elideboardmovementanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elideboardmovementatlas.findRegions("elideboardmovement"));
+        elideboardmovement = new AnimatedImage2(elideboardmovementanim);
+        elideboardmovement.setSize(.60f,.60f);
+        elideboardmovement.setVisible(false);
+        elideboardmovement.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
+        elidecorkscrewatlas = game.manager.get("elidecorkscrewanim/elidecorkscrew.txt",TextureAtlas.class);
+        elidecorkscrewanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elidecorkscrewatlas.findRegions("elidecorkscrew"));
+        elidecorkscrew = new AnimatedImage2(elidecorkscrewanim);
+        elidecorkscrew.setSize(.60f,.60f);
+        elidecorkscrew.setVisible(false);
+        elidecorkscrew.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
+        boardmovekickflipatlas = game.manager.get("boardmovekickflipanim/boardmovekickflip.txt",TextureAtlas.class);
+        boardmovekickflipanim = new Animation<TextureAtlas.AtlasRegion>(.3f,boardmovekickflipatlas.findRegions("boardmovekickflip"));
+        boardmovekickflip = new AnimatedImage2(boardmovekickflipanim);
+        boardmovekickflip.setSize(.60f,.60f);
+        boardmovekickflip.setVisible(false);
+        boardmovekickflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
+
+        boardmoveshuffleatlas = game.manager.get("boardmoveshuffleanim/boardmoveshuffle.txt",TextureAtlas.class);
+        boardmoveshuffleanim = new Animation<TextureAtlas.AtlasRegion>(.3f,boardmoveshuffleatlas.findRegions("boardmoveshuffle"));
+        boardmoveshuffle = new AnimatedImage2(boardmoveshuffleanim);
+        boardmoveshuffle.setSize(.60f,.60f);
+        boardmoveshuffle.setVisible(false);
+        boardmoveshuffle.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
 
         prevVels = new Vector2[NUM_PREV_VELS];
@@ -228,6 +271,10 @@ public class Elide extends Image {
         game.world.stage.addActor(elidefrontflip);
         game.world.stage.addActor(boardfrontflip);
         game.world.stage.addActor(elidefall);
+        game.world.stage.addActor(elideboardmovement);
+        game.world.stage.addActor(elidecorkscrew);
+        game.world.stage.addActor(boardmovekickflip);
+        game.world.stage.addActor(boardmoveshuffle);
 
     }
 
@@ -300,6 +347,42 @@ public class Elide extends Image {
         trick=true;
     }
 
+    public void showElideBoardMovement(){
+        elideboardmovement.setVisible(true);
+        elide.setVisible(false);
+        elideboardmovement.setKeyFrame(0);
+        trick=true;
+    }
+
+    public void showElideCorkscrew(){
+        elidecorkscrew.setVisible(true);
+        elide.setVisible(false);
+        elidecorkscrew.setKeyFrame(0);
+        trick=true;
+    }
+
+    public void showFrontBoardFlip(){
+        boardfrontflip.setVisible(true);
+        board.setVisible(false);
+        boardfrontflip.setKeyFrame(0);
+        trick=true;
+    }
+
+    public void showBoardKickFlip(){
+        boardmovekickflip.setVisible(true);
+        board.setVisible(false);
+        boardmovekickflip.setKeyFrame(0);
+        trick=true;
+    }
+
+    public void showBoardShuffle(){
+        boardmoveshuffle.setVisible(true);
+        board.setVisible(false);
+        boardmoveshuffle.setKeyFrame(0);
+        trick=true;
+    }
+
+
     public void failTrick(){
 
         elidefall.setVisible(true);
@@ -308,6 +391,10 @@ public class Elide extends Image {
         elide.setVisible(false);
         elidefrontflip.setVisible(false);
         boardfrontflip.setVisible(false);
+        boardmoveshuffle.setVisible(false);
+        boardmovekickflip.setVisible(false);
+        elidecorkscrew.setVisible(false);
+        elideboardmovement.setVisible(false);
 
         Timer.schedule(new Timer.Task() {
             @Override
@@ -320,13 +407,6 @@ public class Elide extends Image {
 
     }
 
-    public void showFrontBoardFlip(){
-        boardfrontflip.setVisible(true);
-        board.setVisible(false);
-        boardfrontflip.setKeyFrame(0);
-        trick=true;
-    }
-
     private void checkAnimation(){
         if(elidefrontflip.getAnimation().isAnimationFinished(elidefrontflip.getStateTime()) && elidefrontflip.isVisible()){
             elidefrontflip.setVisible(false);
@@ -334,6 +414,21 @@ public class Elide extends Image {
             shouldCheck=false;
             trick=false;
         }
+
+        else if(elidecorkscrew.getAnimation().isAnimationFinished(elidecorkscrew.getStateTime()) && elidecorkscrew.isVisible()){
+            elidecorkscrew.setVisible(false);
+            elide.setVisible(true);
+            shouldCheck=false;
+            trick=false;
+        }
+
+        else if(elideboardmovement.getAnimation().isAnimationFinished(elideboardmovement.getStateTime()) && elideboardmovement.isVisible()){
+            elideboardmovement.setVisible(false);
+            elide.setVisible(true);
+            shouldCheck=false;
+            trick=false;
+        }
+
     }
 
     private void checkBoardAnimation(){
@@ -343,6 +438,21 @@ public class Elide extends Image {
             //shouldCheck=false;
             trick=false;
         }
+
+        else if(boardmovekickflip.getAnimation().isAnimationFinished(boardmovekickflip.getStateTime()) && boardmovekickflip.isVisible()){
+            boardmovekickflip.setVisible(false);
+            board.setVisible(true);
+            //shouldCheck=false;
+            trick=false;
+        }
+
+        else if(boardmoveshuffle.getAnimation().isAnimationFinished(boardmoveshuffle.getStateTime()) && boardmoveshuffle.isVisible()){
+            boardmoveshuffle.setVisible(false);
+            board.setVisible(true);
+            //shouldCheck=false;
+            trick=false;
+        }
+
     }
 
     public int getJumpHeight(){
@@ -399,6 +509,10 @@ public class Elide extends Image {
         elidefrontflip.setPosition(elide.getX(),elide.getY());
         boardfrontflip.setPosition(board.getX(),board.getY());
         elidefall.setPosition(board.getX(),board.getY());
+        elideboardmovement.setPosition(elide.getX(),elide.getY());
+        elideboardmovement.setPosition(elide.getX(),elide.getY());
+        boardmovekickflip.setPosition(board.getX(),board.getY());
+        boardmoveshuffle.setPosition(board.getX(),board.getY());
         //board.setRotation(angle * MathUtils.radiansToDegrees);
         checkAnimation();
         checkBoardAnimation();

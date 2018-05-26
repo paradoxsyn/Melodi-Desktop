@@ -114,6 +114,10 @@ public class Dpad extends Image {
         totalScore+=100;
     }
 
+    public void addScoreShuffle(){
+        totalScore+=50;
+    }
+
     public Label getScore(){
         return score;
     }
