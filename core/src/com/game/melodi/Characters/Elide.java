@@ -105,14 +105,14 @@ public class Elide extends Image {
         batch = new SpriteBatch();
 
         elideatlas = game.manager.get("backflipanim/flip.txt",TextureAtlas.class);
-        elideanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elideatlas.findRegions("flip"));
+        elideanim = new Animation<TextureAtlas.AtlasRegion>(.15f,elideatlas.findRegions("flip"));
         elidefrontflip = new AnimatedImage2(elideanim);
         elidefrontflip.setSize(.60f,.60f);
         elidefrontflip.setVisible(false);
         elidefrontflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         boardfrontflipatlas = game.manager.get("boardfrontflipanim/boardflip.txt",TextureAtlas.class);
-        boardfrontanim = new Animation<TextureAtlas.AtlasRegion>(.3f,boardfrontflipatlas.findRegions("boardfront"));
+        boardfrontanim = new Animation<TextureAtlas.AtlasRegion>(.15f,boardfrontflipatlas.findRegions("boardfront"));
         boardfrontflip = new AnimatedImage2(boardfrontanim);
         boardfrontflip.setSize(.60f,.60f);
         boardfrontflip.setVisible(false);
@@ -121,33 +121,33 @@ public class Elide extends Image {
         elidefallatlas = game.manager.get("elidefallanim/fall.txt",TextureAtlas.class);
         elidefallanim = new Animation<TextureAtlas.AtlasRegion>(.3f,elidefallatlas.findRegions("elidefall"));
         elidefall = new AnimatedImage2(elidefallanim);
-        elidefall.setSize(.60f,.60f);
+        elidefall.setSize(.50f,.50f);
         elidefall.setVisible(false);
         elidefall.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         elideboardmovementatlas = game.manager.get("elideboardmovementanim/elideboardmovement.txt",TextureAtlas.class);
-        elideboardmovementanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elideboardmovementatlas.findRegions("elideboardmovement"));
+        elideboardmovementanim = new Animation<TextureAtlas.AtlasRegion>(.15f,elideboardmovementatlas.findRegions("elideboardmovement"));
         elideboardmovement = new AnimatedImage2(elideboardmovementanim);
         elideboardmovement.setSize(.60f,.60f);
         elideboardmovement.setVisible(false);
         elideboardmovement.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         elidecorkscrewatlas = game.manager.get("elidecorkscrewanim/elidecorkscrew.txt",TextureAtlas.class);
-        elidecorkscrewanim = new Animation<TextureAtlas.AtlasRegion>(.2f,elidecorkscrewatlas.findRegions("elidecorkscrew"));
+        elidecorkscrewanim = new Animation<TextureAtlas.AtlasRegion>(.15f,elidecorkscrewatlas.findRegions("elidecorkscrew"));
         elidecorkscrew = new AnimatedImage2(elidecorkscrewanim);
         elidecorkscrew.setSize(.60f,.60f);
         elidecorkscrew.setVisible(false);
         elidecorkscrew.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         boardmovekickflipatlas = game.manager.get("boardmovekickflipanim/boardmovekickflip.txt",TextureAtlas.class);
-        boardmovekickflipanim = new Animation<TextureAtlas.AtlasRegion>(.3f,boardmovekickflipatlas.findRegions("boardmovekickflip"));
+        boardmovekickflipanim = new Animation<TextureAtlas.AtlasRegion>(.15f,boardmovekickflipatlas.findRegions("boardmovekickflip"));
         boardmovekickflip = new AnimatedImage2(boardmovekickflipanim);
         boardmovekickflip.setSize(.60f,.60f);
         boardmovekickflip.setVisible(false);
         boardmovekickflip.getAnimation().setPlayMode(Animation.PlayMode.NORMAL);
 
         boardmoveshuffleatlas = game.manager.get("boardmoveshuffleanim/boardmoveshuffle.txt",TextureAtlas.class);
-        boardmoveshuffleanim = new Animation<TextureAtlas.AtlasRegion>(.3f,boardmoveshuffleatlas.findRegions("boardmoveshuffle"));
+        boardmoveshuffleanim = new Animation<TextureAtlas.AtlasRegion>(.15f,boardmoveshuffleatlas.findRegions("boardmoveshuffle"));
         boardmoveshuffle = new AnimatedImage2(boardmoveshuffleanim);
         boardmoveshuffle.setSize(.60f,.60f);
         boardmoveshuffle.setVisible(false);
@@ -185,7 +185,7 @@ public class Elide extends Image {
         bd.angularDamping = 2000;
         bd.linearDamping = 0.5f;
 
-        phybod = new PhysicsShapeCache("physics/boardphy.xml");
+        phybod = new PhysicsShapeCache("physics/boardphy2.xml");
         elideModel = phybod.createBody("elideonboard",game.world.world,bd,.0055f,.0055f);
         //elideModel.setTransform(0,1,0);
         for(int i=0;i<elideModel.getFixtureList().size;i++){
@@ -256,7 +256,7 @@ public class Elide extends Image {
         jointdef = new PrismaticJointDef();
         jointdef.bodyA = elideModel;
         jointdef.bodyB = boardModel;
-        jointdef.collideConnected = true;
+        jointdef.collideConnected = false;
         jointdef.localAnchorA.set(0,0);
         jointdef.localAnchorB.set(0,.5f);
         jointdef.enableLimit = true;
@@ -296,7 +296,7 @@ public class Elide extends Image {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 //super.tap(event, x, y, count, button);
-                isTouched=true;
+                //isTouched=true;
             }
         });
         return isTouched;
@@ -456,14 +456,16 @@ public class Elide extends Image {
     }
 
     public int getJumpHeight(){
-
+        //TODO JUMPTRICKS
         if(isTouched && game.world.getCollision().getConnected()){
             initialHeight=elideModel.getPosition().y;
             jumpHeight = 0;
-        }else if(isTouched && !game.world.getCollision().getConnected()){
+        }
+        if(isTouched && !game.world.getCollision().getConnected()){
             jumpHeight=elideModel.getPosition().y;
             initialHeight=elideModel.getPosition().y;
-        }else{
+        }
+        else{
             initialHeight=elideModel.getPosition().y;
             jumpHeight=0;
         }
@@ -508,7 +510,7 @@ public class Elide extends Image {
 
         elidefrontflip.setPosition(elide.getX(),elide.getY());
         boardfrontflip.setPosition(board.getX(),board.getY());
-        elidefall.setPosition(board.getX(),board.getY());
+        elidefall.setPosition(elide.getX(),elide.getY());
         elideboardmovement.setPosition(elide.getX(),elide.getY());
         elideboardmovement.setPosition(elide.getX(),elide.getY());
         boardmovekickflip.setPosition(board.getX(),board.getY());

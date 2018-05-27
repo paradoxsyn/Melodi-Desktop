@@ -15,7 +15,7 @@
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
-			<circle x="19.577" y="47.606" r="4.913"/>
+			<polygon>45.0000, 45.0000, 2.0000, 63.0000, 8.0000, 45.0000</polygon>
 		</fixture>
 		<fixture>
 			<density>2</density>
@@ -24,7 +24,7 @@
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
-			<circle x="29.859" y="47.606" r="4.913"/>
+			<polygon>45.0000, 45.0000, 81.0000, 45.0000, 88.0000, 61.0000</polygon>
 		</fixture>
 		<fixture>
 			<density>2</density>
@@ -33,52 +33,7 @@
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
-			<circle x="40.282" y="47.465" r="4.913"/>
-		</fixture>
-		<fixture>
-			<density>2</density>
-			<friction>0</friction>
-			<restitution>0</restitution>
-			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
-			<filter_group_index>0</filter_group_index>
-			<circle x="50.423" y="47.324" r="4.913"/>
-		</fixture>
-		<fixture>
-			<density>2</density>
-			<friction>0</friction>
-			<restitution>0</restitution>
-			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
-			<filter_group_index>0</filter_group_index>
-			<circle x="60.704" y="47.324" r="4.913"/>
-		</fixture>
-		<fixture>
-			<density>2</density>
-			<friction>0</friction>
-			<restitution>0</restitution>
-			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
-			<filter_group_index>0</filter_group_index>
-			<circle x="70.845" y="47.042" r="4.913"/>
-		</fixture>
-		<fixture>
-			<density>2</density>
-			<friction>0</friction>
-			<restitution>0</restitution>
-			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
-			<filter_group_index>0</filter_group_index>
-			<polygon>15.0000, 45.0000, 5.0000, 55.0000, 8.0000, 45.0000</polygon>
-		</fixture>
-		<fixture>
-			<density>2</density>
-			<friction>0</friction>
-			<restitution>0</restitution>
-			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
-			<filter_group_index>0</filter_group_index>
-			<polygon>76.0000, 45.0000, 83.0000, 45.0000, 86.0000, 55.0000</polygon>
+			<polygon>61.0000, 50.0000, 28.0000, 50.0000, 44.0000, 45.0000</polygon>
 		</fixture>
 	</body>
 

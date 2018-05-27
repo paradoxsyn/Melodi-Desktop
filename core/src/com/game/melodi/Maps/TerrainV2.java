@@ -74,7 +74,7 @@ public class TerrainV2  {
     double musicFreqScore;
     int leveler = 70;
     int balancer = 1;
-    private boolean pause;
+    private boolean pause, holdup;
 
     Background3 img;
     float[] verts,meshverts;
@@ -401,22 +401,19 @@ public class TerrainV2  {
             public void onLeft() {
                 System.out.println("LEFT");
                 if(elide.getCharImage().isVisible() && elide.getJumpHeight() > 1.5f){
-                    elide.showFrontFlip();
-                    elide.showFrontBoardFlip();
-                    dpad.addScoreFrontFlip();
+                    elide.showElideBoardMovement();
+                    elide.showBoardKickFlip();
+                    dpad.addScoreShuffle();
                 }
-                System.out.println(elide.getElideBody().getPosition().y);
             }
 
             @Override
             public void onRight() {
                 System.out.println("RIGHT");
                 if(elide.getCharImage().isVisible() && elide.getJumpHeight() > 1.5f){
-                    elide.showFrontFlip();
-                    elide.showFrontBoardFlip();
-                    dpad.addScoreFrontFlip();
+                    elide.showElideCorkscrew();
+                    dpad.addScoreShuffle();
                 }
-                System.out.println(elide.getElideBody().getPosition().y);
             }
 
             @Override
@@ -448,11 +445,7 @@ public class TerrainV2  {
                 }else{
                     dblTap = false;
                 }*/
-                if(elide.getCharImage().isVisible() && elide.getJumpHeight() > 1.5f){
-                    elide.showElideBoardMovement();
-                    elide.showBoardShuffle();
-                    dpad.addScoreShuffle();
-                }
+                elide.getElideBody().setTransform(elide.getBoardBody().getPosition().x,elide.getBoardBody().getPosition().y,0);
                 System.out.println("TAPPED");
             }
 
@@ -577,6 +570,13 @@ public class TerrainV2  {
             counter--;
             elide.failTrick();
             elide.setTrick(false);
+            holdup=true;
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    holdup=false;
+                }
+            },2,0,0);
             //constantly goes to 0
             dpad.setLifeNum(counter);
         }
@@ -612,10 +612,10 @@ public class TerrainV2  {
         }
         setCamPos();
         swipeInit();
-        if(swipe.isDrawing && !game.world.getCollision().getTrackEnd()){
+        if(swipe.isDrawing && !game.world.getCollision().getTrackEnd() && !holdup){
             startRunForward();
         }
-        if(swipe.isDrawing && game.world.getCollision().getTrackEnd()){
+        if(swipe.isDrawing && game.world.getCollision().getTrackEnd() && !holdup){
             startRunBackward();
         }
         scaleOut();
@@ -732,8 +732,8 @@ public class TerrainV2  {
 
     private void startRunForward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
-            elide.getElideBody().applyLinearImpulse(.90f,.25f,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
-            elide.getBoardBody().applyLinearImpulse(.90f,0,elide.getBoardBody().getWorldCenter().x,elide.getBoardBody().getWorldCenter().y,true);
+            elide.getElideBody().applyForce(8.90f,0,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
+            elide.getBoardBody().applyForce(8.90f,1f,elide.getBoardBody().getWorldCenter().x+.5f,elide.getBoardBody().getWorldCenter().y,true);
             //elide.getBoardBody().applyAngularImpulse(-6f,true);
             //elide.getElideBody().applyTorque(-100,true);
             //elide.getElideBody().setFixedRotation(true);
@@ -742,8 +742,8 @@ public class TerrainV2  {
 
     private void startRunBackward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
-            elide.getElideBody().applyLinearImpulse(-.90f,.25f,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
-            elide.getBoardBody().applyLinearImpulse(-.90f,0,elide.getBoardBody().getWorldCenter().x,elide.getBoardBody().getWorldCenter().y,true);
+            elide.getElideBody().applyForce(-.90f,.25f,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
+            elide.getBoardBody().applyForce(-.90f,0,elide.getBoardBody().getWorldCenter().x,elide.getBoardBody().getWorldCenter().y,true);
             //elide.getElideBody().applyTorque(-650,true);
             //elide.getElideBody().setFixedRotation(true);
         }
@@ -772,8 +772,8 @@ public class TerrainV2  {
     }
 
     private void gameOver(){
-        elide.getCharImage().addAction(Actions.moveBy(0,-5,3,Interpolation.exp5));
-        elide.getBoardImage().addAction(Actions.moveBy(0,-5,3, Interpolation.exp5));
+        //elide.getCharImage().addAction(Actions.moveBy(0,-5,3,Interpolation.exp5));
+        //elide.getBoardImage().addAction(Actions.moveBy(0,-5,3, Interpolation.exp5));
         turnOff = true;
 
         if(!done) {
