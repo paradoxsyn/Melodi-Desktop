@@ -79,7 +79,7 @@ public class TerrainV2  {
     Background3 img;
     float[] verts,meshverts;
     ShaderProgram shaderProgram;
-    Mesh quad;
+    Mesh quad,surfaceMesh;
     private String vshade,fshade;
     private int[] feed;
     int maxPhysics = 20000;
@@ -258,11 +258,6 @@ public class TerrainV2  {
         //generateXY();
         initializeTextures();
 
-        /*quad = new Mesh( true, meshverts.length, 0,
-                new VertexAttribute( VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE ),
-                new VertexAttribute( VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE+"0" ) );
-        //quad.setVertices(meshverts);
-        //quad.setIndices(indices);*/
         dPadInit();
 
         updatePhysics(0,normfeed.length);
@@ -387,7 +382,7 @@ public class TerrainV2  {
     }
 
     private void initializeTextures() {
-        groundTexture = new Texture(Gdx.files.internal("ground.png"));
+        groundTexture = new Texture(Gdx.files.internal(".png"));
         groundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         surfaceTexture = new Texture(Gdx.files.internal("grass.png"));
@@ -431,8 +426,7 @@ public class TerrainV2  {
             public void onDown() {
                 System.out.println("DOWN");
                 if(elide.getCharImage().isVisible() && elide.getJumpHeight() > 1.5f){
-                    elide.showFrontFlip();
-                    elide.showFrontBoardFlip();
+                    elide.showBoardShuffle();
                     dpad.addScoreFrontFlip();
                 }
                 System.out.println(elide.getElideBody().getPosition().y);
@@ -445,7 +439,6 @@ public class TerrainV2  {
                 }else{
                     dblTap = false;
                 }*/
-                elide.getElideBody().setTransform(elide.getBoardBody().getPosition().x,elide.getBoardBody().getPosition().y,0);
                 System.out.println("TAPPED");
             }
 
@@ -469,9 +462,18 @@ public class TerrainV2  {
         if (res < 2)
             res = 2;
 
-        quad = new Mesh(Mesh.VertexDataType.VertexArray, true, 2 * res, (2*res-1)*6,
+        /*quad = new Mesh(Mesh.VertexDataType.VertexArray, true, 2 * res, (2*res-1)*6,
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"));*/
+
+        quad = new Mesh(Mesh.VertexDataType.VertexArray, true, 2*res,(2*res-1)*6,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
                 new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"));
+        surfaceMesh = new Mesh(Mesh.VertexDataType.VertexArray, true, 2*res,(2*res-1)*6,
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_texCoord0"));
+
+
 
 
         float x = 0f;     //current position to put vertices
@@ -500,20 +502,22 @@ public class TerrainV2  {
             //tempVer[offset+4] = x;      tempVer[offset+5] = y;  // height
             //tempVer[offset+6] = x;      tempVer[offset+7] = y;  // height
 
-            tempVer[offset+4] = (x+=leveler)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down
+            //got this working slightly mimicing 
+
+            tempVer[offset+4] = (x+=leveler)/80;      tempVer[offset+5] = 0;  // height //this set the stage look farther down
             //tempVer[offset+4] = (x+=35)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down //test diff lengths of stage
             tempVer[offset+6] = x;               tempVer[offset+7] = normfeed[i+1]/balancer;  // height
 
             //tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height original
-            //tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = y-0.02f; // below height
+            //tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = 1; // below height
 
-            tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .06f; // below height
-            tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = 1f; // below height
+            tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height
+            tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = 1; // below height
 
             //tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+0.015f;  // height original
-            //tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = y+0.015f;  // height
+            //tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = 0;  // height
 
-            tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+2;// height
+            tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+0.015f;// height
             tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = 0;  // height
 
             //tempVer2[offset2+0] = x;      tempVer2[offset2+1] = 0f; // below height
@@ -533,6 +537,7 @@ public class TerrainV2  {
         }
 
         quad.setVertices(tempVer);
+        surfaceMesh.setVertices(tempVerSurface);
 
         // INDICES
         short[] tempIn = new short[(2*res-1)*6];
@@ -551,6 +556,7 @@ public class TerrainV2  {
         }
 
         quad.setIndices(tempIn);
+        surfaceMesh.setIndices(tempIn);
 
         return quad;
     }
@@ -605,8 +611,12 @@ public class TerrainV2  {
             shaderProgram.begin();
             shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
             groundTexture.bind(0);
-            shaderProgram.setUniformi("u_texture", 0);
+            shaderProgram.setUniformi("u_texture",0);
             quad.render(shaderProgram, GL20.GL_TRIANGLES);
+            surfaceTexture.bind(0);
+            shaderProgram.setUniformi("u_texture", 0);
+            shaderProgram.setUniformMatrix("u_projTrans", game.world.stage.getCamera().combined);
+            surfaceMesh.render(shaderProgram, GL20.GL_TRIANGLES);
             shaderProgram.end();
             game.r.uirender();
         }
@@ -732,18 +742,20 @@ public class TerrainV2  {
 
     private void startRunForward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
-            elide.getElideBody().applyForce(8.90f,0,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
-            elide.getBoardBody().applyForce(8.90f,1f,elide.getBoardBody().getWorldCenter().x+.5f,elide.getBoardBody().getWorldCenter().y,true);
+            elide.getElideBody().applyLinearImpulse(.55f,0,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
+            elide.getBoardBody().applyLinearImpulse(.55f,.15f,elide.getBoardBody().getWorldCenter().x,elide.getBoardBody().getWorldCenter().y,true);
+            //elide.getElideBody().applyForce(8.90f,0,elide.getElideBody().getWorldCenter().x-.5f,elide.getElideBody().getWorldCenter().y,true);
+            //elide.getBoardBody().applyForce(8.90f,1f,elide.getBoardBody().getWorldCenter().x+.5f,elide.getBoardBody().getWorldCenter().y,true);
             //elide.getBoardBody().applyAngularImpulse(-6f,true);
             //elide.getElideBody().applyTorque(-100,true);
-            //elide.getElideBody().setFixedRotation(true);
+            elide.getElideBody().setFixedRotation(true);
         }
     }
 
     private void startRunBackward(){
         if(elide.getElideBody().getLinearVelocity().x <= MAX_VELOCITY && !fling){
-            elide.getElideBody().applyForce(-.90f,.25f,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
-            elide.getBoardBody().applyForce(-.90f,0,elide.getBoardBody().getWorldCenter().x,elide.getBoardBody().getWorldCenter().y,true);
+            elide.getElideBody().applyLinearImpulse(-.55f,.15f,elide.getElideBody().getWorldCenter().x,elide.getElideBody().getWorldCenter().y,true);
+            elide.getBoardBody().applyLinearImpulse(-.55f,0,elide.getBoardBody().getWorldCenter().x,elide.getBoardBody().getWorldCenter().y,true);
             //elide.getElideBody().applyTorque(-650,true);
             //elide.getElideBody().setFixedRotation(true);
         }

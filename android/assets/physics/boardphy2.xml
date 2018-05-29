@@ -15,7 +15,7 @@
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
-			<polygon>45.0000, 45.0000, 2.0000, 63.0000, 8.0000, 45.0000</polygon>
+			<polygon>45.0000, 45.0000, 7.0000, 51.0000, 8.0000, 45.0000</polygon>
 		</fixture>
 		<fixture>
 			<density>2</density>
@@ -24,7 +24,7 @@
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
-			<polygon>45.0000, 45.0000, 81.0000, 45.0000, 88.0000, 61.0000</polygon>
+			<polygon>45.0000, 45.0000, 77.0000, 45.0000, 80.0000, 50.0000</polygon>
 		</fixture>
 		<fixture>
 			<density>2</density>

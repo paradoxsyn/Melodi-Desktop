@@ -512,7 +512,7 @@ public class Elide extends Image {
         boardfrontflip.setPosition(board.getX(),board.getY());
         elidefall.setPosition(elide.getX(),elide.getY());
         elideboardmovement.setPosition(elide.getX(),elide.getY());
-        elideboardmovement.setPosition(elide.getX(),elide.getY());
+        elidecorkscrew.setPosition(elide.getX(),elide.getY());
         boardmovekickflip.setPosition(board.getX(),board.getY());
         boardmoveshuffle.setPosition(board.getX(),board.getY());
         //board.setRotation(angle * MathUtils.radiansToDegrees);
