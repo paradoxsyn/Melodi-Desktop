@@ -382,10 +382,10 @@ public class TerrainV2  {
     }
 
     private void initializeTextures() {
-        groundTexture = new Texture(Gdx.files.internal(".png"));
+        groundTexture = new Texture(Gdx.files.internal("ground.png"));
         groundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
-        surfaceTexture = new Texture(Gdx.files.internal("grass.png"));
+        surfaceTexture = new Texture(Gdx.files.internal("testsurf.png"));
         surfaceTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
         surfaceTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
@@ -478,7 +478,7 @@ public class TerrainV2  {
 
         float x = 0f;     //current position to put vertices
         float med = 0.3f; //starting y
-        float y = med;
+        float y = 0;
 
         float slopeWidth = (float) (LENGTH / ((float) (res - 1)))/25; //horizontal distance between 2 heightpoints
         slopeWidth=0.1f;
@@ -497,28 +497,28 @@ public class TerrainV2  {
             //tempVer[offset+2] = x;      tempVer[offset+3] = 0; // below height
 
             tempVer[offset+0] = (x/80);      tempVer[offset+1] = normfeed[i]/balancer; // below height
-            tempVer[offset+2] = x;      tempVer[offset+3] = 1; // below height // I think UV was 0
+            tempVer[offset+2] = x/80;      tempVer[offset+3] = 1; // below height // I think UV was 0
 
             //tempVer[offset+4] = x;      tempVer[offset+5] = y;  // height
             //tempVer[offset+6] = x;      tempVer[offset+7] = y;  // height
 
             //got this working slightly mimicing 
 
-            tempVer[offset+4] = (x+=leveler)/80;      tempVer[offset+5] = 0;  // height //this set the stage look farther down
+            tempVer[offset+4] = (x+=leveler)/80;      tempVer[offset+5] = -2;  // height //this set the stage look farther down
             //tempVer[offset+4] = (x+=35)/80;      tempVer[offset+5] = -1;  // height //this set the stage look farther down //test diff lengths of stage
-            tempVer[offset+6] = x;               tempVer[offset+7] = normfeed[i+1]/balancer;  // height
+            tempVer[offset+6] = x/80;               tempVer[offset+7] = normfeed[i+1]/balancer;  // height
 
             //tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height original
             //tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = 1; // below height
 
-            tempVerSurface[offset+0] = x;      tempVerSurface[offset+1] = y- .02f; // below height
-            tempVerSurface[offset+2] = x;      tempVerSurface[offset+3] = 1; // below height
+            tempVerSurface[offset+0] = (y+=leveler)/80;      tempVerSurface[offset+1] = normfeed[i]/balancer; // below height
+            tempVerSurface[offset+2] = y/80;      tempVerSurface[offset+3] = .75f; // below height
 
             //tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+0.015f;  // height original
             //tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = 0;  // height
 
-            tempVerSurface[offset+4] = x;      tempVerSurface[offset+5] = y+0.015f;// height
-            tempVerSurface[offset+6] = x;      tempVerSurface[offset+7] = 0;  // height
+            tempVerSurface[offset+4] = (y)/80;      tempVerSurface[offset+5] = (normfeed[i+1]/balancer)+ .005f;// height
+            tempVerSurface[offset+6] = (y)/80;      tempVerSurface[offset+7] = 0f;  // height
 
             //tempVer2[offset2+0] = x;      tempVer2[offset2+1] = 0f; // below height
             tempVer2[offset2+0] = x;      tempVer2[offset2+1] = y; // below height

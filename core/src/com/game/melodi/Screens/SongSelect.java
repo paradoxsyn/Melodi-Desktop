@@ -145,7 +145,7 @@ public class SongSelect extends ScreenAdapter {
 
         stylebutton.font = font;
 
-        /*button = new TextButton("Load elise", stylebutton);
+        button = new TextButton("Load elise", stylebutton);
 
         button.addListener(new InputListener() {
                                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -167,20 +167,20 @@ public class SongSelect extends ScreenAdapter {
 
 
                                }
-                           });*/
+                           });
 
 
         titlefield.setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
 
         game.stage.addActor(cave);
        // game.stage.addActor(table);
-        //game.stage.addActor(button);
+        game.stage.addActor(button);
         game.stage.addActor(scrollTable);
         //game.stage.addActor(titlefield);
         game.stage.addActor(furry);
 
         if(slist.isEmpty()){
-            addSomeSongs();
+            //addSomeSongs();
         }
 
     }

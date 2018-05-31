@@ -165,7 +165,7 @@ public class MusicPlayer
         }
         this.filename = filename;
         //player = new MusicFilePlayer(filename);
-        player = new MusicFilePlayer(File.local(filename));
+        player = new MusicFilePlayer(File.internal(filename));
     }
     catch(JavaLayerException e) {
         System.out.println("Problem setting up player");
