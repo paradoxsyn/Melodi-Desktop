@@ -24,6 +24,7 @@ import com.game.melodi.Input.SwipeTriStrip;
 import com.game.melodi.Loading.AdActivityHandler;
 import com.game.melodi.Loading.AndroidInterface;
 import com.game.melodi.Loading.PathInterface;
+import com.game.melodi.Loading.PlayServicesInterface;
 import com.game.melodi.Loading.ServerLoader;
 import com.game.melodi.Networking.ServerStart;
 import com.game.melodi.Physics.GameWorld;
@@ -47,6 +48,7 @@ public class Melodi extends Game {
 	public PathInterface extPath;
 	public AndroidInterface musicList;
 	public AdActivityHandler aHand;
+	public PlayServicesInterface ps;
 	public InputMultiplexer multi;
 
 	//GUI Aspect
@@ -57,10 +59,11 @@ public class Melodi extends Game {
 
 	public ServerStart server;
 
-	public Melodi(PathInterface path, AndroidInterface musicList, AdActivityHandler aHand){
+	public Melodi(PathInterface path, AndroidInterface musicList, AdActivityHandler aHand, PlayServicesInterface psInterface){
 		this.extPath = path;
 		this.musicList = musicList;
 		this.aHand = aHand;
+		this.ps = psInterface;
 	}
 
 	@Override
