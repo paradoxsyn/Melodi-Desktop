@@ -1,19 +1,27 @@
 package com.game.melodi;
 
-import android.app.Activity;
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
+
+import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.game.melodi.Loading.PlayServicesInterface;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.LeaderboardsClient;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import static android.content.ContentValues.TAG;
 
@@ -21,54 +29,68 @@ import static android.content.ContentValues.TAG;
  * Created by RabitHole on 6/1/2018.
  */
 
-public class PlayServices implements PlayServicesInterface{
+public class PlayServices extends AndroidApplication {
 
-    Context mContext;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+
+    private Context mContext;
+
+    @Override
+    protected void onCreate (Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        playerSignIn();
+        System.out.println("GOOGLEISSIGNED"+isSignedIn());
+    }
 
     public PlayServices(Context context){
-        this.mContext = context;
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null){
-                    //Signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+        mContext = context;
+    }
+
+
+    public boolean isSignedIn() {
+        return GoogleSignIn.getLastSignedInAccount(mContext) != null;
+    }
+
+    public void playerSignIn(){
+
+
+        //startSignInIntent();
+
+    }
+
+    public void startSignInIntent(){
+
+
+    }
+
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task =
+                    GoogleSignIn.getSignedInAccountFromIntent(intent);
+
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                onConnected(account);
+            } catch (ApiException apiException) {
+                String message = apiException.getMessage();
+                if (message == null || message.isEmpty()) {
+                    message = "Error";
                 }
-                else{
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
+
+                //onDisconnected();
+
+                new AlertDialog.Builder(this)
+                        .setMessage(message)
+                        .setNeutralButton(android.R.string.ok, null)
+                        .show();
             }
-        };
-
-        mAuth.addAuthStateListener(mAuthListener);
-
-
-    }
-
-    public void removeAuth(){
-        if(mAuthListener != null){
-            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 
-    public int checkGoogleService(Context context){
-        return  GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
-    }
-
-    public void signInClient(){
-
-        if(checkGoogleService(mContext) == 1){
-
-        }
-    }
-
-    public FirebaseAuth getMAuth(){
-        return mAuth;
-    }
+    private void onConnected(GoogleSignInAccount googleSignInAccount) {
+        Log.d(TAG, "onConnected(): connected to Google APIs");
+        mLeaderboardsClient = Games.getLeaderboardsClient(this, googleSignInAccount);
+        }*/
 
 }

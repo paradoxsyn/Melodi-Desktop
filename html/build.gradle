@@ -1,5 +1,26 @@
-apply plugin: "java"
-apply plugin: "jetty"
+buildscript {
+    dependencies {
+        classpath group: 'org.wisepersist', name: 'gwt-gradle-plugin', version: '1.0.6'
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'war'
+apply plugin: 'gwt'
+
+import org.wisepersist.gradle.plugins.gwt.GwtSuperDev
+
+def HttpFileServer server = null
+def httpFilePort = 8080
+
+dependencies {
+    //compile project(":tests:gdx-tests")
+    //compile project(":backends:gdx-backends-gwt")
+    //compile project(":extensions:gdx-box2d:gdx-box2d-gwt")
+    //compile project(":extensions:gdx-controllers:gdx-controllers-gwt")
+}
 
 gwt {
     gwtVersion='2.8.0' // Should match the gwt version used for building the gwt backend
@@ -7,27 +28,39 @@ gwt {
     minHeapSize="1G"
 
     src = files(file("src/")) // Needs to be in front of "modules" below.
-    modules 'com.game.melodi.GdxDefinition'
-    devModules 'com.game.melodi.GdxDefinitionSuperdev'
-    project.webAppDirName = 'webapp'
+    modules 'com.badlogic.gdx.tests.gwt.GdxTestsGwt'
+    devModules 'com.badlogic.gdx.tests.gwt.GdxTestsGwt'
 
-    compiler {
-        strict = true;
-        disableCastChecking = true;
+    compiler.strict = true
+    compiler.disableCastChecking = true
+}
+
+task startHttpServer () {
+    dependsOn draftCompileGwt
+
+    String output = project.buildDir.path + "/gwt/draftOut"
+
+    doLast {
+        copy {
+            from "webapp"
+            into output
+        }
+
+        copy {
+            from "war"
+            into output
+        }
+
+        server = new SimpleHttpFileServerFactory().start(new File(output), httpFilePort)
+
+        println "Server started in directory " + server.getContentRoot() + ", http://localhost:" + server.getPort()
     }
 }
 
-task draftRun(type: JettyRunWar) {
-    dependsOn draftWar
-    dependsOn.remove('war')
-    webApp=draftWar.archivePath
-    daemon=true
-}
-
-task superDev(type: de.richsource.gradle.plugins.gwt.GwtSuperDev) {
-    dependsOn draftRun
+task superDev (type: GwtSuperDev) {
+    dependsOn startHttpServer
     doFirst {
-    	gwt.modules = gwt.devModules
+        gwt.modules = gwt.devModules
     }
 }
 
@@ -41,7 +74,7 @@ task dist(dependsOn: [clean, compileGwt]) {
         copy {
             from "webapp"
             into "build/dist"
-            }
+        }
         copy {
             from "war"
             into "build/dist"
@@ -49,21 +82,17 @@ task dist(dependsOn: [clean, compileGwt]) {
     }
 }
 
-draftWar {
-   from "war"
-}
 
-task addSource << {
-	sourceSets.main.compileClasspath += files(project(':core').sourceSets.main.allJava.srcDirs)
+task addSource {
+    doLast {
+        sourceSets.main.compileClasspath += files(project(':tests:gdx-tests').sourceSets.main.allJava.srcDirs)
+        sourceSets.main.compileClasspath += files(project(':backends:gdx-backends-gwt').sourceSets.main.allJava.srcDirs)
+        sourceSets.main.compileClasspath += files(project(':extensions:gdx-box2d:gdx-box2d-gwt').sourceSets.main.allJava.srcDirs)
+        sourceSets.main.compileClasspath += files(project(':extensions:gdx-controllers:gdx-controllers').sourceSets.main.allJava.srcDirs)
+        sourceSets.main.compileClasspath += files(project(':extensions:gdx-controllers:gdx-controllers-gwt').sourceSets.main.allJava.srcDirs)
+        sourceSets.main.compileClasspath += files(project(':gdx').sourceSets.main.allJava.srcDirs)
+    }
 }
 
 tasks.compileGwt.dependsOn(addSource)
 tasks.draftCompileGwt.dependsOn(addSource)
-
-sourceCompatibility = 1.6
-sourceSets.main.java.srcDirs = [ "src/" ]
-
-
-eclipse.project {
-    name = appName + "-html"
-}

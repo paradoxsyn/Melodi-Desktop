@@ -2,6 +2,11 @@
 <resources>
 
     <string name="app_name">melodi</string>
-    <string name="app_id">1034506135946</string>
+    <!-- app_id -->
+    <string name="app_id" translatable="false">1034506135946</string>
+    <!-- package_name -->
+    <string name="package_name" translatable="false">com.game.melodi</string>
+    <!-- leaderboard Global score -->
+    <string name="leaderboard_global_score" translatable="false">CgkIitP76o0eEAIQAA</string>
 
 </resources>

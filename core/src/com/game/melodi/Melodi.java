@@ -59,11 +59,11 @@ public class Melodi extends Game {
 
 	public ServerStart server;
 
-	public Melodi(PathInterface path, AndroidInterface musicList, AdActivityHandler aHand, PlayServicesInterface psInterface){
+	public Melodi(PathInterface path, AndroidInterface musicList, AdActivityHandler aHand, PlayServicesInterface ps){
 		this.extPath = path;
 		this.musicList = musicList;
 		this.aHand = aHand;
-		this.ps = psInterface;
+		this.ps = ps;
 	}
 
 	@Override

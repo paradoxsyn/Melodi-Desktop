@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 
-import sun.nio.ch.FileChannelImpl;
-
 public class FileInputStream extends InputStream {
 
 	InputStream in;
